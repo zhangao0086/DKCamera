@@ -8,11 +8,14 @@
 
 import UIKit
 import AVFoundation
+import CoreMotion
 
 public class DKCamera: UIViewController {
 
     public var didCancelled: (() -> Void)?
     public var didFinishCapturingImage: ((image: UIImage) -> Void)?
+    
+    public var cameraOverlayView: UIView?
     
     private let captureSession = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer?
@@ -25,12 +28,17 @@ public class DKCamera: UIViewController {
     private var flashButton: UIButton!
     private var currentFlashModel: AVCaptureFlashMode?
     
+    private var currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+    private var motionManager = CMMotionManager()
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
 
         self.setupDevices()
         self.setupUI()
         self.beginSession()
+        
+        self.setupMotionManager()
     }
     
     public override func viewWillAppear(animated: Bool) {
@@ -39,12 +47,24 @@ public class DKCamera: UIViewController {
         if !self.captureSession.running {
             self.captureSession.startRunning()
         }
+
+        if !self.motionManager.accelerometerActive {
+            self.motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue(), withHandler: { (accelerometerData, error) -> Void in
+                if error == nil {
+                    self.outputAccelertionData(accelerometerData.acceleration)
+                } else {
+                    println("error while update accelerometer: \(error!.localizedDescription)")
+                }
+            })
+        }
+
     }
     
     public override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         
         self.captureSession.stopRunning()
+        self.motionManager.stopAccelerometerUpdates()
     }
 
     override public func didReceiveMemoryWarning() {
@@ -174,7 +194,7 @@ public class DKCamera: UIViewController {
             dispatch_async(dispatch_get_global_queue(0, 0), { () -> Void in
                 let connection = stillImageOutput.connectionWithMediaType(AVMediaTypeVideo)
                 
-                connection.videoOrientation = AVCaptureVideoOrientation(rawValue: UIDevice.currentDevice().orientation.rawValue)!
+                connection.videoOrientation = self.currentOrientationToAVCaptureVideoOrientation()
                 
                 stillImageOutput.captureStillImageAsynchronouslyFromConnection(connection, completionHandler: { (imageDataSampleBuffer, error: NSError?) -> Void in
                     
@@ -345,6 +365,58 @@ public class DKCamera: UIViewController {
 
                 currentDevice.unlockForConfiguration()
         }
+
+    }
+    
+    // MARK: - Core Motion
+    
+    private func setupMotionManager() {
+        self.motionManager.accelerometerUpdateInterval = 0.2
+        self.motionManager.gyroUpdateInterval = 0.2
+    }
+    
+    private func outputAccelertionData(acceleration: CMAcceleration) {
+        var currentOrientation: UIInterfaceOrientation?
+        
+        if acceleration.x >= 0.75 {
+            currentOrientation = .LandscapeLeft
+        } else if acceleration.x <= -0.75 {
+            currentOrientation = .LandscapeRight
+        } else if acceleration.y <= -0.75 {
+            currentOrientation = .Portrait
+        } else if acceleration.y >= 0.75 {
+            currentOrientation = .PortraitUpsideDown
+        } else {
+            return;
+        }
+
+        self.currentOrientation = currentOrientation!
+    }
+    
+    private func currentOrientationToAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
+        switch self.currentOrientation {
+        case .Portrait:
+            return .Portrait
+        case .PortraitUpsideDown:
+            return .PortraitUpsideDown
+        case .LandscapeLeft:
+            return .LandscapeLeft
+        case .LandscapeRight:
+            return .LandscapeRight
+        default:
+            return .Portrait
+        }
+    }
+    
+}
+
+// MARK: - Rersources
+
+private extension NSBundle {
+    
+    class func cameraBundle() -> NSBundle {
+        let assetPath = NSBundle(forClass: DKCameraResource.self).resourcePath!
+        return NSBundle(path: assetPath.stringByAppendingPathComponent("DKCameraResource.bundle"))!
     }
     
 }
