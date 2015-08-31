@@ -8,4 +8,4 @@ language: objective-c
 #- if brew outdated | grep -qx xctool; then brew upgrade xctool; fi
 
 script:
-- xcodebuild clean build test -project DKCameraDemo.xcodeproj -scheme DKCameraDemo -sdk iphonesimulator7.1
+- xcodebuild clean build test -project DKCameraDemo.xcodeproj -scheme DKCameraDemo -sdk iphonesimulator8.4
