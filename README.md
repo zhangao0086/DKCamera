@@ -12,7 +12,7 @@ Update for Xcode 6.4 with Swift 1.2
 A light weight & simple & easy camera for iOS by Swift. It uses CoreMotion framework to detect device orientation, so the screen-orientation lock will be ignored. And it has two other purposes:
 
 * Can be presenting or pushing or Integrating.
-* Suppressing the warning **"Snapshotting a view that has not been rendered results in an empty snapshot. Ensure your view has been rendered at least once before snapshotting or snapshot after screen updates."**(It seems a bug in iOS8).
+* Suppressing the warning **"Snapshotting a view that has not been rendered results in an empty snapshot. Ensure your view has been rendered at least once before snapshotting or snapshot after screen updates."**(It seems a bug in iOS 8).
 
 ## Requirements
 * iOS 7.1+
