@@ -24,6 +24,7 @@ class ViewController: UIViewController {
 
     @IBAction func capture() {        
         let camera = DKCamera()
+        
         camera.didCancelled = { () in
             println("didCancelled")
             
