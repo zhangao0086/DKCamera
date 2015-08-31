@@ -2,7 +2,7 @@ DKCamera
 =======================
 
  [![Build Status](https://secure.travis-ci.org/zhangao0086/DKCamera.svg)](http://travis-ci.org/zhangao0086/DKCamera) [![Version Status](http://img.shields.io/cocoapods/v/DKCamera.png)][docsLink] [![license MIT](http://img.shields.io/badge/license-MIT-orange.png)][mitLink]
-<img width="50%" height="50%" src="https://raw.githubusercontent.com/zhangao0086/DKImagePickerController/develop/Screenshot1.png" />
+<img width="50%" height="50%" src="https://raw.githubusercontent.com/zhangao0086/DKCamera/develop/Screenshot1.png" />
 ---
 
 
@@ -17,7 +17,7 @@ New version! It's A Facebook style Image Picker Controller by Swift.
 
 ## Installation
 #### iOS 8 and newer
-DKImagePickerController is available on Cocoapods. Simply add the following line to your podfile:
+DKCamera is available on Cocoapods. Simply add the following line to your podfile:
 
 ```ruby
 # For latest release in cocoapods
