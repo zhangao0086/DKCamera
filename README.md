@@ -98,9 +98,8 @@ If you want to add new language, pull request or issue!
 
 ## Soon to do
 
-* Simply to take a picture!
-* It can hide the camera.
-* Simple photo browser.
+* Handles UI for camera orientation
+* Overlay views.
 
 ---
 Any pull requests to be welcome!!!

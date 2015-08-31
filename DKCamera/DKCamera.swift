@@ -16,20 +16,30 @@ public class DKCamera: UIViewController {
     public var didFinishCapturingImage: ((image: UIImage) -> Void)?
     
     public var cameraOverlayView: UIView?
+    public var flashModel:AVCaptureFlashMode = .Auto {
+        didSet {
+            self.updateFlashButton()
+            self.updateFlashMode()
+        }
+    }
     
     private let captureSession = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer?
     
+    private var currentDevice: AVCaptureDevice?
     private var captureDeviceFront: AVCaptureDevice?
     private var captureDeviceBack: AVCaptureDevice?
     
-    private var currentDevice: AVCaptureDevice?
-    
-    private var flashButton: UIButton!
-    private var currentFlashModel: AVCaptureFlashMode?
-    
     private var currentOrientation = UIApplication.sharedApplication().statusBarOrientation
     private var motionManager = CMMotionManager()
+    
+    private lazy var flashButton: UIButton = {
+        let flashButton = UIButton()
+        flashButton.addTarget(self, action: "switchFlashMode", forControlEvents: .TouchUpInside)
+        
+        return flashButton
+    }()
+    private var cameraSwitchButton: UIButton!
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -98,21 +108,20 @@ public class DKCamera: UIViewController {
         self.view.addSubview(bottomView)
         
         // switch button
-        if self.currentDevice != nil {
-            let cameraSwitchButton: UIButton = {
-                let cameraSwitchButton = UIButton()
-                cameraSwitchButton.addTarget(self, action: "switchCamera", forControlEvents: .TouchUpInside)
-                cameraSwitchButton.setImage(DKCameraResource.cameraSwitchImage(), forState: .Normal)
-                cameraSwitchButton.sizeToFit()
-                
-                return cameraSwitchButton
-            }()
+        let cameraSwitchButton: UIButton = {
+            let cameraSwitchButton = UIButton()
+            cameraSwitchButton.addTarget(self, action: "switchCamera", forControlEvents: .TouchUpInside)
+            cameraSwitchButton.setImage(DKCameraResource.cameraSwitchImage(), forState: .Normal)
+            cameraSwitchButton.sizeToFit()
             
-            cameraSwitchButton.frame.origin = CGPoint(x: bottomView.bounds.width - cameraSwitchButton.bounds.width - 15,
-                y: (bottomView.bounds.height - cameraSwitchButton.bounds.height) / 2)
-            cameraSwitchButton.autoresizingMask = .FlexibleLeftMargin | .FlexibleTopMargin | .FlexibleBottomMargin
-            bottomView.addSubview(cameraSwitchButton)
-        }
+            return cameraSwitchButton
+            }()
+        
+        cameraSwitchButton.frame.origin = CGPoint(x: bottomView.bounds.width - cameraSwitchButton.bounds.width - 15,
+            y: (bottomView.bounds.height - cameraSwitchButton.bounds.height) / 2)
+        cameraSwitchButton.autoresizingMask = .FlexibleLeftMargin | .FlexibleTopMargin | .FlexibleBottomMargin
+        bottomView.addSubview(cameraSwitchButton)
+        self.cameraSwitchButton = cameraSwitchButton
         
         // capture button
         let captureButton: UIButton = {
@@ -174,11 +183,9 @@ public class DKCamera: UIViewController {
             return flashButton
         }()
         
-        self.flashButton = flashButton
-        self.flashButton.hidden = true
         self.flashButton.frame.origin = CGPoint(x: 5, y: 15)
         self.view.addSubview(self.flashButton)
-        self.switchFlashMode()
+        self.updateFlashButton()
     }
     
     // MARK: - Callbacks
@@ -238,29 +245,30 @@ public class DKCamera: UIViewController {
     // MARK: - Handles Flash
     
     internal func switchFlashMode() {
-        var flashImage: UIImage?
-        
-        if let currentFlashModel = self.currentFlashModel {
-            switch currentFlashModel {
-            case .Auto:
-                self.currentFlashModel = .Off
-                flashImage = DKCameraResource.cameraFlashOffImage()
-            case .On:
-                self.currentFlashModel = .Auto
-                flashImage = DKCameraResource.cameraFlashAutoImage()
-            case .Off:
-                self.currentFlashModel = .On
-                flashImage = DKCameraResource.cameraFlashOnImage()
-            }
-        } else {
-            self.currentFlashModel = .Auto
-            flashImage = DKCameraResource.cameraFlashAutoImage()
+        switch self.flashModel {
+        case .Auto:
+            self.flashModel = .Off
+        case .On:
+            self.flashModel = .Auto
+        case .Off:
+            self.flashModel = .On
         }
+    }
+    
+    private func updateFlashButton() {
+        struct FlashImage {
+            
+            static let images = [
+                AVCaptureFlashMode.Auto : DKCameraResource.cameraFlashAutoImage(),
+                AVCaptureFlashMode.On : DKCameraResource.cameraFlashOnImage(),
+                AVCaptureFlashMode.Off : DKCameraResource.cameraFlashOffImage()
+            ]
+            
+        }
+        var flashImage: UIImage = FlashImage.images[self.flashModel]!
         
-        flashButton.setImage(flashImage, forState: .Normal)
-        flashButton.sizeToFit()
-        
-        self.updateFlashMode()
+        self.flashButton.setImage(flashImage, forState: .Normal)
+        self.flashButton.sizeToFit()
     }
     
     // MARK: - Capture Session
@@ -283,7 +291,12 @@ public class DKCamera: UIViewController {
     private func setupCurrentDevice() {
         if let currentDevice = self.currentDevice {
             
-            self.flashButton?.hidden = !currentDevice.isFlashModeSupported(self.currentFlashModel!)
+            if currentDevice.isFlashModeSupported(self.flashModel) {
+                self.flashButton.hidden = false
+                self.updateFlashMode()
+            } else {
+                self.flashButton.hidden = true
+            }
             
             for oldInput in self.captureSession.inputs as! [AVCaptureInput] {
                 self.captureSession.removeInput(oldInput)
@@ -310,8 +323,8 @@ public class DKCamera: UIViewController {
     
     private func updateFlashMode() {
         if let currentDevice = self.currentDevice
-            where currentDevice.lockForConfiguration(nil) {
-                currentDevice.flashMode = self.currentFlashModel!
+            where currentDevice.isFlashModeSupported(.Auto) && currentDevice.lockForConfiguration(nil) {
+                currentDevice.flashMode = self.flashModel
                 currentDevice.unlockForConfiguration()
         }
     }
@@ -368,7 +381,7 @@ public class DKCamera: UIViewController {
 
     }
     
-    // MARK: - Core Motion
+    // MARK: - Handles Orientation
     
     private func setupMotionManager() {
         self.motionManager.accelerometerUpdateInterval = 0.2
@@ -387,10 +400,14 @@ public class DKCamera: UIViewController {
         } else if acceleration.y >= 0.75 {
             currentOrientation = .PortraitUpsideDown
         } else {
-            return;
+            return
         }
-
-        self.currentOrientation = currentOrientation!
+        
+        if self.currentOrientation != currentOrientation! {
+            self.currentOrientation = currentOrientation!
+            
+            self.updateUIForCurrentOrientation()
+        }
     }
     
     private func currentOrientationToAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
@@ -405,6 +422,31 @@ public class DKCamera: UIViewController {
             return .LandscapeRight
         default:
             return .Portrait
+        }
+    }
+    
+    private func updateUIForCurrentOrientation() {
+        var degree = 0.0
+        
+        switch self.currentOrientation {
+        case .Portrait:
+            degree = 0
+        case .PortraitUpsideDown:
+            degree = 180
+        case .LandscapeLeft:
+            degree = 270
+        case .LandscapeRight:
+            degree = 90
+        default:
+            degree = 0.0
+        }
+        
+        // degrees to radians
+        let rotateAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, CGFloat(degree / 180.0 * M_PI))
+        
+        UIView.animateWithDuration(0.2) { () -> Void in
+            self.flashButton.transform = rotateAffineTransform
+            self.cameraSwitchButton.transform = rotateAffineTransform
         }
     }
     
