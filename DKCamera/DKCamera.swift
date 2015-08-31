@@ -119,7 +119,7 @@ public class DKCamera: UIViewController {
             cameraSwitchButton.sizeToFit()
             
             return cameraSwitchButton
-            }()
+        }()
         
         cameraSwitchButton.frame.origin = CGPoint(x: bottomView.bounds.width - cameraSwitchButton.bounds.width - 15,
             y: (bottomView.bounds.height - cameraSwitchButton.bounds.height) / 2)
