@@ -9,7 +9,7 @@ DKCamera
 Update for Xcode 6.4 with Swift 1.2
 ---
 ## Description
-New version! It's A Facebook style Image Picker Controller by Swift.  
+A light weight & simple & easy camera for iOS by Swift.
 
 ## Requirements
 * iOS 7.1+
@@ -26,13 +26,14 @@ pod 'DKCamera'
 
 #### iOS 7.x
 To use Swift libraries on apps that support iOS 7, you must manually copy the files into your application project.
-[iOS 7.x](https://github.com/CocoaPods/blog.cocoapods.org/commit/6933ae5ccfc1e0b39dd23f4ec67d7a083975836d)
+[CocoaPods only supports Swift on OS X 10.9 and newer, and iOS 8 and newer.](https://github.com/CocoaPods/blog.cocoapods.org/commit/6933ae5ccfc1e0b39dd23f4ec67d7a083975836d)
 
 ## Easy to use
 
 ```swift
 
 let camera = DKCamera()
+
 camera.didCancelled = { () in
     println("didCancelled")
     
@@ -49,6 +50,13 @@ camera.didFinishCapturingImage = {(image: UIImage) in
 self.presentViewController(camera, animated: true, completion: nil)
 
 ````
+
+### You also can use these APIs:
+
+```swift
+public var cameraOverlayView: UIView?
+public var flashModel:AVCaptureFlashMode = .Auto
+```
 
 [docsLink]:http://cocoadocs.org/docsets/DKCamera
 [mitLink]:http://opensource.org/licenses/MIT
