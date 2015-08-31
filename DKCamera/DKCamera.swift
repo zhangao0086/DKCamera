@@ -99,6 +99,10 @@ public class DKCamera: UIViewController {
     }
     
     private func setupUI() {
+        if let cameraOverlayView = self.cameraOverlayView {
+            self.view.addSubview(cameraOverlayView)
+        }
+        
         let bottomView = UIView()
         let bottomViewHeight: CGFloat = 70
         bottomView.bounds.size = CGSize(width: self.view.bounds.width, height: bottomViewHeight)
