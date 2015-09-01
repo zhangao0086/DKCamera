@@ -16,11 +16,16 @@ public class DKCamera: UIViewController {
     public var didFinishCapturingImage: ((image: UIImage) -> Void)?
     
     public var cameraOverlayView: UIView?
-    public var flashModel:AVCaptureFlashMode = .Auto {
+    public var flashModel:AVCaptureFlashMode! {
         didSet {
             self.updateFlashButton()
             self.updateFlashMode()
+            self.updateFlashModelToUserDefautls(self.flashModel)
         }
+    }
+    
+    public class func isAvailable() -> Bool {
+        return UIImagePickerController.isSourceTypeAvailable(.Camera)
     }
     
     private let captureSession = AVCaptureSession()
@@ -31,7 +36,7 @@ public class DKCamera: UIViewController {
     private var captureDeviceBack: AVCaptureDevice?
     
     private var currentOrientation = UIApplication.sharedApplication().statusBarOrientation
-    private var motionManager = CMMotionManager()
+    private let motionManager = CMMotionManager()
     
     private lazy var flashButton: UIButton = {
         let flashButton = UIButton()
@@ -99,6 +104,8 @@ public class DKCamera: UIViewController {
     }
     
     private func setupUI() {
+        self.view.backgroundColor = UIColor.blackColor()
+
         if let cameraOverlayView = self.cameraOverlayView {
             self.view.addSubview(cameraOverlayView)
         }
@@ -189,7 +196,6 @@ public class DKCamera: UIViewController {
         
         self.flashButton.frame.origin = CGPoint(x: 5, y: 15)
         self.view.addSubview(self.flashButton)
-        self.updateFlashButton()
     }
     
     // MARK: - Callbacks
@@ -249,7 +255,7 @@ public class DKCamera: UIViewController {
     // MARK: - Handles Flash
     
     internal func switchFlashMode() {
-        switch self.flashModel {
+        switch self.flashModel! {
         case .Auto:
             self.flashModel = .Off
         case .On:
@@ -257,6 +263,15 @@ public class DKCamera: UIViewController {
         case .Off:
             self.flashModel = .On
         }
+    }
+    
+    private func flashModelFromUserDefaults() -> AVCaptureFlashMode {
+        let rawValue = NSUserDefaults.standardUserDefaults().integerForKey("DKCamera.flashModel")
+        return AVCaptureFlashMode(rawValue: rawValue)!
+    }
+    
+    private func updateFlashModelToUserDefautls(flashModel: AVCaptureFlashMode) {
+        NSUserDefaults.standardUserDefaults().setInteger(flashModel.rawValue, forKey: "DKCamera.flashModel")
     }
     
     private func updateFlashButton() {
@@ -295,9 +310,9 @@ public class DKCamera: UIViewController {
     private func setupCurrentDevice() {
         if let currentDevice = self.currentDevice {
             
-            if currentDevice.isFlashModeSupported(self.flashModel) {
+            if currentDevice.flashAvailable {
                 self.flashButton.hidden = false
-                self.updateFlashMode()
+                self.flashModel = self.flashModelFromUserDefaults()
             } else {
                 self.flashButton.hidden = true
             }
@@ -327,7 +342,7 @@ public class DKCamera: UIViewController {
     
     private func updateFlashMode() {
         if let currentDevice = self.currentDevice
-            where currentDevice.isFlashModeSupported(.Auto) && currentDevice.lockForConfiguration(nil) {
+            where currentDevice.flashAvailable && currentDevice.lockForConfiguration(nil) {
                 currentDevice.flashMode = self.flashModel
                 currentDevice.unlockForConfiguration()
         }
@@ -360,7 +375,7 @@ public class DKCamera: UIViewController {
             }
         }
         
-        if self.currentDevice?.isFocusModeSupported(.ContinuousAutoFocus) == false {
+        if self.currentDevice == nil || self.currentDevice?.flashAvailable == false {
             return
         }
         

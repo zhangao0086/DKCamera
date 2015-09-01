@@ -58,7 +58,10 @@ self.presentViewController(camera, animated: true, completion: nil)
 
 ```swift
 public var cameraOverlayView: UIView?
+
 public var flashModel:AVCaptureFlashMode = .Auto
+
+public class func isAvailable() -> Bool
 ```
 
 ## License
