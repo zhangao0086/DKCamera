@@ -35,7 +35,7 @@ public class DKCamera: UIViewController {
     private var captureDeviceFront: AVCaptureDevice?
     private var captureDeviceBack: AVCaptureDevice?
     
-    private var currentOrientation = UIApplication.sharedApplication().statusBarOrientation
+    private var currentOrientation = UIInterfaceOrientation.Portrait
     private let motionManager = CMMotionManager()
     
     private lazy var flashButton: UIButton = {
@@ -105,6 +105,7 @@ public class DKCamera: UIViewController {
     
     private func setupUI() {
         self.view.backgroundColor = UIColor.blackColor()
+        let contentView = self.view
 
         if let cameraOverlayView = self.cameraOverlayView {
             self.view.addSubview(cameraOverlayView)
@@ -112,11 +113,11 @@ public class DKCamera: UIViewController {
         
         let bottomView = UIView()
         let bottomViewHeight: CGFloat = 70
-        bottomView.bounds.size = CGSize(width: self.view.bounds.width, height: bottomViewHeight)
-        bottomView.frame.origin = CGPoint(x: 0, y: self.view.bounds.height - bottomViewHeight)
+        bottomView.bounds.size = CGSize(width: contentView.bounds.width, height: bottomViewHeight)
+        bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - bottomViewHeight)
         bottomView.autoresizingMask = .FlexibleWidth | .FlexibleTopMargin
         bottomView.backgroundColor = UIColor(white: 0, alpha: 0.4)
-        self.view.addSubview(bottomView)
+        contentView.addSubview(bottomView)
         
         // switch button
         let cameraSwitchButton: UIButton = {
@@ -183,9 +184,9 @@ public class DKCamera: UIViewController {
             return cancelButton
         }()
         
-        cancelButton.frame.origin = CGPoint(x: self.view.bounds.width - cancelButton.bounds.width - 15, y: 25)
+        cancelButton.frame.origin = CGPoint(x: contentView.bounds.width - cancelButton.bounds.width - 15, y: 25)
         cancelButton.autoresizingMask = .FlexibleBottomMargin | .FlexibleLeftMargin
-        self.view.addSubview(cancelButton)
+        contentView.addSubview(cancelButton)
         
         let flashButton: UIButton = {
             let flashButton = UIButton()
@@ -195,7 +196,7 @@ public class DKCamera: UIViewController {
         }()
         
         self.flashButton.frame.origin = CGPoint(x: 5, y: 15)
-        self.view.addSubview(self.flashButton)
+        contentView.addSubview(self.flashButton)
     }
     
     // MARK: - Callbacks
@@ -211,7 +212,7 @@ public class DKCamera: UIViewController {
             dispatch_async(dispatch_get_global_queue(0, 0), { () -> Void in
                 let connection = stillImageOutput.connectionWithMediaType(AVMediaTypeVideo)
                 
-                connection.videoOrientation = self.currentOrientationToAVCaptureVideoOrientation()
+                connection.videoOrientation = self.currentOrientation.toAVCaptureVideoOrientation()
                 
                 stillImageOutput.captureStillImageAsynchronouslyFromConnection(connection, completionHandler: { (imageDataSampleBuffer, error: NSError?) -> Void in
                     
@@ -303,8 +304,12 @@ public class DKCamera: UIViewController {
         }
         
         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
+        self.previewLayer?.bounds.size = CGSize(width: min(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height),
+            height: max(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height))
+        self.previewLayer?.anchorPoint = CGPointZero
+        self.previewLayer?.position = CGPointZero
+        
         self.view.layer.insertSublayer(self.previewLayer, atIndex: 0)
-        self.previewLayer?.frame = self.view.layer.frame
     }
     
     private func setupCurrentDevice() {
@@ -429,21 +434,6 @@ public class DKCamera: UIViewController {
         }
     }
     
-    private func currentOrientationToAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
-        switch self.currentOrientation {
-        case .Portrait:
-            return .Portrait
-        case .PortraitUpsideDown:
-            return .PortraitUpsideDown
-        case .LandscapeLeft:
-            return .LandscapeLeft
-        case .LandscapeRight:
-            return .LandscapeRight
-        default:
-            return .Portrait
-        }
-    }
-    
     private func updateUIForCurrentOrientation() {
         var degree = 0.0
         
@@ -460,8 +450,7 @@ public class DKCamera: UIViewController {
             degree = 0.0
         }
         
-        // degrees to radians
-        let rotateAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, CGFloat(degree / 180.0 * M_PI))
+        let rotateAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, degreesToRadians(degree))
         
         UIView.animateWithDuration(0.2) { () -> Void in
             self.flashButton.transform = rotateAffineTransform
@@ -469,6 +458,28 @@ public class DKCamera: UIViewController {
         }
     }
     
+    public override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
+    public override func supportedInterfaceOrientations() -> Int {
+        return Int(UIInterfaceOrientationMask.Portrait.rawValue)
+    }
+    
+}
+
+// MARK: - Utilities
+
+private extension UIInterfaceOrientation {
+    
+    func toAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
+        return AVCaptureVideoOrientation(rawValue: self.rawValue)!
+    }
+
+}
+
+private func degreesToRadians(degree: Double) -> CGFloat {
+    return CGFloat(degree / 180.0 * M_PI)
 }
 
 // MARK: - Rersources
