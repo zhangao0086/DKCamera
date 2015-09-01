@@ -23,6 +23,10 @@ public class DKCamera: UIViewController {
         }
     }
     
+    public class func isAvailable() -> Bool {
+        return UIImagePickerController.isSourceTypeAvailable(.Camera)
+    }
+    
     private let captureSession = AVCaptureSession()
     private var previewLayer: AVCaptureVideoPreviewLayer?
     
@@ -99,6 +103,8 @@ public class DKCamera: UIViewController {
     }
     
     private func setupUI() {
+        self.view.backgroundColor = UIColor.blackColor()
+
         if let cameraOverlayView = self.cameraOverlayView {
             self.view.addSubview(cameraOverlayView)
         }
