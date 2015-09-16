@@ -6,7 +6,7 @@ DKCamera
 ---
 
 
-Update for Xcode 6.4 with Swift 1.2
+Update for Xcode 7 with Swift 2.0
 ---
 ## Description
 A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` framework to detect device orientation, so the screen-orientation lock will be ignored(*Perfect orientation handling*). And it has two other purposes:
