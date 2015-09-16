@@ -26,13 +26,13 @@ class ViewController: UIViewController {
         let camera = DKCamera()
         
         camera.didCancelled = { () in
-            println("didCancelled")
+            print("didCancelled")
             
             self.dismissViewControllerAnimated(true, completion: nil)
         }
 
         camera.didFinishCapturingImage = {(image: UIImage) in
-            println("didFinishCapturingImage")
+            print("didFinishCapturingImage")
             
             self.dismissViewControllerAnimated(true, completion: nil)
             
