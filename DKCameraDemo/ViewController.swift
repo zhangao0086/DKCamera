@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     @IBAction func capture() {        
         let camera = DKCamera()
         
-        camera.didCancelled = { () in
+        camera.didCancel = { () in
             print("didCancelled")
             
             self.dismissViewControllerAnimated(true, completion: nil)
