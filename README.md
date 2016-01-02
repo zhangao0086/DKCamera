@@ -34,21 +34,19 @@ To use Swift libraries on apps that support iOS 7, you must manually copy the fi
 ## Easy to use
 
 ```swift
-
 let camera = DKCamera()
 
-camera.didCancelled = { () in
-    println("didCancelled")
-    
-    self.dismissViewControllerAnimated(true, completion: nil)
+camera.didCancel = { () in
+	print("didCancel")
+
+	self.dismissViewControllerAnimated(true, completion: nil)
 }
 
 camera.didFinishCapturingImage = {(image: UIImage) in
-    println("didFinishCapturingImage")
-    
-    self.dismissViewControllerAnimated(true, completion: nil)
-    
-    self.imageView?.image = image
+	print("didFinishCapturingImage")
+	print(image)
+
+	self.dismissViewControllerAnimated(true, completion: nil)
 }
 self.presentViewController(camera, animated: true, completion: nil)
 
