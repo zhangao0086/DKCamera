@@ -159,7 +159,7 @@ public class DKCamera: UIViewController {
 		// capture button
 		let captureButton: UIButton = {
 			
-			class CaptureButton: UIButton {
+			class DKCaptureButton: UIButton {
 				private override func beginTrackingWithTouch(touch: UITouch, withEvent event: UIEvent?) -> Bool {
 					self.backgroundColor = UIColor.whiteColor()
 					return true
@@ -179,7 +179,7 @@ public class DKCamera: UIViewController {
 				}
 			}
 			
-			let captureButton = CaptureButton()
+			let captureButton = DKCaptureButton()
 			captureButton.addTarget(self, action: "takePicture", forControlEvents: .TouchUpInside)
 			captureButton.bounds.size = CGSizeApplyAffineTransform(CGSize(width: bottomViewHeight,
 				height: bottomViewHeight), CGAffineTransformMakeScale(0.9, 0.9))
