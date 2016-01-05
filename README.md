@@ -66,7 +66,6 @@ public class func isAvailable() -> Bool
 > If you are going to add a full-screen view as `cameraOverlayView`, maybe you should use the `DKCameraPassthroughView` or its subclass that have overriden the `hitTest` method in order to the event passes through to the expected view.
 ```swift
 //  DKCamera.swift
-
 public class DKCameraPassthroughView: UIView {
 	public override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
 		let hitTestingView = super.hitTest(point, withEvent: event)
