@@ -10,6 +10,13 @@ import UIKit
 import AVFoundation
 import CoreMotion
 
+public class DKCameraPassthroughView: UIView {
+	public override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
+		let hitTestingView = super.hitTest(point, withEvent: event)
+		return hitTestingView == self ? nil : hitTestingView
+	}
+}
+
 public class DKCamera: UIViewController {
 	
 	public class func checkCameraPermission(handler: (granted: Bool) -> Void) {
