@@ -60,23 +60,23 @@ public class DKCamera: UIViewController {
 		return UIImagePickerController.isSourceTypeAvailable(.Camera)
 	}
 	
-	private let captureSession = AVCaptureSession()
-	private var previewLayer: AVCaptureVideoPreviewLayer?
+	public let captureSession = AVCaptureSession()
+	public var previewLayer: AVCaptureVideoPreviewLayer?
 	
-	private var currentDevice: AVCaptureDevice?
-	private var captureDeviceFront: AVCaptureDevice?
-	private var captureDeviceBack: AVCaptureDevice?
+	public var currentDevice: AVCaptureDevice?
+	public var captureDeviceFront: AVCaptureDevice?
+	public var captureDeviceBack: AVCaptureDevice?
 	
-	private var currentOrientation = UIInterfaceOrientation.Portrait
-	private let motionManager = CMMotionManager()
+	public var currentOrientation = UIInterfaceOrientation.Portrait
+	public let motionManager = CMMotionManager()
 	
-	private lazy var flashButton: UIButton = {
+	public lazy var flashButton: UIButton = {
 		let flashButton = UIButton()
 		flashButton.addTarget(self, action: "switchFlashMode", forControlEvents: .TouchUpInside)
 		
 		return flashButton
 	}()
-	private var cameraSwitchButton: UIButton!
+	public var cameraSwitchButton: UIButton!
 	
 	override public func viewDidLoad() {
 		super.viewDidLoad()
@@ -119,7 +119,7 @@ public class DKCamera: UIViewController {
 		// Dispose of any resources that can be recreated.
 	}
 	
-	private func setupDevices() {
+	public func setupDevices() {
 		let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as! [AVCaptureDevice]
 		
 		for device in devices {
@@ -135,11 +135,12 @@ public class DKCamera: UIViewController {
 		self.currentDevice = self.captureDeviceBack ?? self.captureDeviceFront
 	}
 	
-	private func setupUI() {
+    let bottomView = UIView()
+    
+	public func setupUI() {
 		self.view.backgroundColor = UIColor.blackColor()
 		let contentView = self.view
 		
-		let bottomView = UIView()
 		let bottomViewHeight: CGFloat = 70
 		bottomView.bounds.size = CGSize(width: contentView.bounds.width, height: bottomViewHeight)
 		bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - bottomViewHeight)
@@ -291,16 +292,16 @@ public class DKCamera: UIViewController {
 		}
 	}
 	
-	private func flashModeFromUserDefaults() -> AVCaptureFlashMode {
+	public func flashModeFromUserDefaults() -> AVCaptureFlashMode {
 		let rawValue = NSUserDefaults.standardUserDefaults().integerForKey("DKCamera.flashMode")
 		return AVCaptureFlashMode(rawValue: rawValue)!
 	}
 	
-	private func updateFlashModeToUserDefautls(flashMode: AVCaptureFlashMode) {
+	public func updateFlashModeToUserDefautls(flashMode: AVCaptureFlashMode) {
 		NSUserDefaults.standardUserDefaults().setInteger(flashMode.rawValue, forKey: "DKCamera.flashMode")
 	}
 	
-	private func updateFlashButton() {
+	public func updateFlashButton() {
 		struct FlashImage {
 			
 			static let images = [
@@ -318,7 +319,7 @@ public class DKCamera: UIViewController {
 	
 	// MARK: - Capture Session
 	
-	private func beginSession() {
+	public func beginSession() {
 		self.captureSession.sessionPreset = AVCaptureSessionPresetHigh
 		
 		self.setupCurrentDevice()
@@ -337,7 +338,7 @@ public class DKCamera: UIViewController {
 		self.view.layer.insertSublayer(self.previewLayer!, atIndex: 0)
 	}
 	
-	private func setupCurrentDevice() {
+	public func setupCurrentDevice() {
 		if let currentDevice = self.currentDevice {
 			
 			if currentDevice.flashAvailable {
@@ -369,7 +370,7 @@ public class DKCamera: UIViewController {
 		}
 	}
 	
-	private func updateFlashMode() {
+	public func updateFlashMode() {
 		if let currentDevice = self.currentDevice
 			where currentDevice.flashAvailable {
 				try! currentDevice.lockForConfiguration()
@@ -378,7 +379,7 @@ public class DKCamera: UIViewController {
 		}
 	}
 	
-	private func focusAtTouchPoint(touchPoint: CGPoint) {
+	public func focusAtTouchPoint(touchPoint: CGPoint) {
 		
 		func showFocusViewAtPoint(touchPoint: CGPoint) {
 			
@@ -431,12 +432,12 @@ public class DKCamera: UIViewController {
 	
 	// MARK: - Handles Orientation
 	
-	private func setupMotionManager() {
+	public func setupMotionManager() {
 		self.motionManager.accelerometerUpdateInterval = 0.2
 		self.motionManager.gyroUpdateInterval = 0.2
 	}
 	
-	private func outputAccelertionData(acceleration: CMAcceleration) {
+	public func outputAccelertionData(acceleration: CMAcceleration) {
 		var currentOrientation: UIInterfaceOrientation?
 		
 		if acceleration.x >= 0.75 {
@@ -458,7 +459,7 @@ public class DKCamera: UIViewController {
 		}
 	}
 	
-	private func updateUIForCurrentOrientation() {
+	public func updateUIForCurrentOrientation() {
 		var degree = 0.0
 		
 		switch self.currentOrientation {
@@ -494,7 +495,7 @@ public class DKCamera: UIViewController {
 
 // MARK: - Utilities
 
-private extension UIInterfaceOrientation {
+public extension UIInterfaceOrientation {
 	
 	func toAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
 		return AVCaptureVideoOrientation(rawValue: self.rawValue)!
@@ -502,13 +503,13 @@ private extension UIInterfaceOrientation {
 	
 }
 
-private func degreesToRadians(degree: Double) -> CGFloat {
+public func degreesToRadians(degree: Double) -> CGFloat {
 	return CGFloat(degree / 180.0 * M_PI)
 }
 
 // MARK: - Rersources
 
-private extension NSBundle {
+public extension NSBundle {
 	
 	class func cameraBundle() -> NSBundle {
 		let assetPath = NSBundle(forClass: DKCameraResource.self).resourcePath!
@@ -517,9 +518,9 @@ private extension NSBundle {
 	
 }
 
-private class DKCameraResource {
+public class DKCameraResource {
 	
-	private class func imageForResource(name: String) -> UIImage {
+	public class func imageForResource(name: String) -> UIImage {
 		let bundle = NSBundle.cameraBundle()
 		let imagePath = bundle.pathForResource(name, ofType: "png", inDirectory: "Images")
 		let image = UIImage(contentsOfFile: imagePath!)
