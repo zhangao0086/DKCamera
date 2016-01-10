@@ -62,10 +62,13 @@ public class DKCamera: UIViewController {
 	
 	public let captureSession = AVCaptureSession()
 	public var previewLayer: AVCaptureVideoPreviewLayer?
+	private var beginZoomScale: CGFloat = 1.0
+	private var zoomScale: CGFloat = 1.0
 	
 	public var currentDevice: AVCaptureDevice?
 	public var captureDeviceFront: AVCaptureDevice?
 	public var captureDeviceBack: AVCaptureDevice?
+	private weak var stillImageOutput: AVCaptureStillImageOutput?
 	
 	public var currentOrientation = UIInterfaceOrientation.Portrait
 	public let motionManager = CMMotionManager()
@@ -77,6 +80,7 @@ public class DKCamera: UIViewController {
 		return flashButton
 	}()
 	public var cameraSwitchButton: UIButton!
+	
 	
 	override public func viewDidLoad() {
 		super.viewDidLoad()
@@ -219,6 +223,9 @@ public class DKCamera: UIViewController {
 		
 		self.flashButton.frame.origin = CGPoint(x: 5, y: 15)
 		contentView.addSubview(self.flashButton)
+		
+		contentView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: Selector("handleZoom:")))
+		contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("handleFocus:")))
 	}
 	
 	// MARK: - Callbacks
@@ -233,15 +240,15 @@ public class DKCamera: UIViewController {
 			return
 		}
 		
-		if let stillImageOutput = self.captureSession.outputs.first as? AVCaptureStillImageOutput {
-			dispatch_async(dispatch_get_global_queue(0, 0), { () -> Void in
+		if let stillImageOutput = self.stillImageOutput {
+			dispatch_async(dispatch_get_global_queue(0, 0), {
 				let connection = stillImageOutput.connectionWithMediaType(AVMediaTypeVideo)
-				
 				if connection == nil {
 					return
 				}
 				
 				connection.videoOrientation = self.currentOrientation.toAVCaptureVideoOrientation()
+				connection.videoScaleAndCropFactor = self.zoomScale
 				
 				stillImageOutput.captureStillImageAsynchronouslyFromConnection(connection, completionHandler: { (imageDataSampleBuffer, error: NSError?) -> Void in
 					
@@ -262,11 +269,24 @@ public class DKCamera: UIViewController {
 		
 	}
 	
+	// MARK: - Handles Zoom
+	
+	public func handleZoom(gesture: UIPinchGestureRecognizer) {
+		if gesture.state == .Began {
+			self.beginZoomScale = self.zoomScale
+		} else if gesture.state == .Changed {
+			self.zoomScale = min(4.0, max(1.0, self.beginZoomScale * gesture.scale))
+			CATransaction.begin()
+			CATransaction.setAnimationDuration(0.025)
+			self.previewLayer?.setAffineTransform(CGAffineTransformMakeScale(self.zoomScale, self.zoomScale))
+			CATransaction.commit()
+		}
+	}
+	
 	// MARK: - Handles Focus
 	
-	public override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-		let anyTouch = touches.first!
-		let touchPoint = anyTouch.locationInView(self.view)
+	public func handleFocus(gesture: UITapGestureRecognizer) {
+		let touchPoint = gesture.locationInView(self.view)
 		self.focusAtTouchPoint(touchPoint)
 	}
 	
@@ -327,15 +347,17 @@ public class DKCamera: UIViewController {
 		let stillImageOutput = AVCaptureStillImageOutput()
 		if self.captureSession.canAddOutput(stillImageOutput) {
 			self.captureSession.addOutput(stillImageOutput)
+			self.stillImageOutput = stillImageOutput
 		}
 		
 		self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
-		self.previewLayer?.bounds.size = CGSize(width: min(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height),
-			height: max(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height))
-		self.previewLayer?.anchorPoint = CGPointZero
-		self.previewLayer?.position = CGPointZero
+		self.previewLayer?.videoGravity = AVLayerVideoGravityResizeAspect
+		let rootLayer = self.view.layer
+		self.previewLayer?.frame = CGRect(origin: CGPointZero,
+			size: CGSize(width: min(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height),
+			height: max(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height)))
 		
-		self.view.layer.insertSublayer(self.previewLayer!, atIndex: 0)
+		rootLayer.insertSublayer(self.previewLayer!, atIndex: 0)
 	}
 	
 	public func setupCurrentDevice() {
