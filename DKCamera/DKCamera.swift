@@ -75,8 +75,8 @@ public class DKCamera: UIViewController {
 	
 	public var contentView = UIView()
 	
-	public var originalOrientation = UIDevice.currentDevice().orientation
-	public var currentOrientation = UIDevice.currentDevice().orientation
+	public var originalOrientation: UIDeviceOrientation!
+	public var currentOrientation: UIDeviceOrientation!
 	public let motionManager = CMMotionManager()
 	
 	public lazy var flashButton: UIButton = {
@@ -109,9 +109,12 @@ public class DKCamera: UIViewController {
 			self.motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { accelerometerData, error in
 				if error == nil {
 					let currentOrientation = accelerometerData!.acceleration.toDeviceOrientation() ?? self.currentOrientation
+					if self.originalOrientation == nil {
+						self.initialOriginalOrientationForOrientation()
+					}
 					if self.currentOrientation != currentOrientation {
 						self.currentOrientation = currentOrientation
-						self.updateLayoutForCurrentOrientation()
+						self.updateContentLayoutForCurrentOrientation()
 					}
 				} else {
 					print("error while update accelerometer: \(error!.localizedDescription)", terminator: "")
@@ -119,6 +122,15 @@ public class DKCamera: UIViewController {
 			})
 		}
 		
+	}
+	
+	public override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		
+		if self.originalOrientation == nil {
+			self.contentView.frame = self.view.bounds
+			self.previewLayer.frame = self.view.bounds
+		}
 	}
 	
 	public override func viewDidDisappear(animated: Bool) {
@@ -159,8 +171,7 @@ public class DKCamera: UIViewController {
 		self.view.backgroundColor = UIColor.blackColor()
 		self.view.addSubview(self.contentView)
 		self.contentView.backgroundColor = UIColor.clearColor()
-		self.contentView.bounds.size = self.view.bounds.size
-		self.contentView.center = self.view.center
+		self.contentView.frame = self.view.bounds
 		
 		let bottomViewHeight: CGFloat = 70
 		bottomView.bounds.size = CGSize(width: contentView.bounds.width, height: bottomViewHeight)
@@ -367,7 +378,6 @@ public class DKCamera: UIViewController {
 		
 		self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
 		self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
-		self.previewLayer.connection.videoOrientation = self.currentOrientation.toAVCaptureVideoOrientation()
 		self.previewLayer.frame = self.view.bounds
 		
 		let rootLayer = self.view.layer
@@ -478,7 +488,16 @@ public class DKCamera: UIViewController {
 		self.motionManager.gyroUpdateInterval = 0.5
 	}
 	
-	public func updateLayoutForCurrentOrientation() {
+	public func initialOriginalOrientationForOrientation() {
+		self.originalOrientation = UIDevice.currentDevice().orientation
+		let supportedInterfaceOrientations = UIApplication.sharedApplication().supportedInterfaceOrientationsForWindow(self.view.window)
+		if !supportedInterfaceOrientations.contains(self.originalOrientation.toInterfaceOrientationMask()) {
+			self.originalOrientation = UIApplication.sharedApplication().statusBarOrientation.toDeviceOrientation()
+		}
+		self.previewLayer.connection.videoOrientation = self.originalOrientation.toAVCaptureVideoOrientation()
+	}
+	
+	public func updateContentLayoutForCurrentOrientation() {
 		let newAngle = self.currentOrientation.toAngleRelativeToPortrait() - self.originalOrientation.toAngleRelativeToPortrait()
 
 		if self.allowsRotate {
@@ -509,9 +528,42 @@ public class DKCamera: UIViewController {
 
 // MARK: - Utilities
 
+public extension UIInterfaceOrientation {
+	
+	func toDeviceOrientation() -> UIDeviceOrientation {
+		switch self {
+		case .Portrait:
+			return .Portrait
+		case .PortraitUpsideDown:
+			return .PortraitUpsideDown
+		case .LandscapeRight:
+			return .LandscapeLeft
+		case .LandscapeLeft:
+			return .LandscapeRight
+		default:
+			return .Portrait
+		}
+	}
+}
+
 public extension UIDeviceOrientation {
 	
 	func toAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
+		switch self {
+		case .Portrait:
+			return .Portrait
+		case .PortraitUpsideDown:
+			return .PortraitUpsideDown
+		case .LandscapeRight:
+			return .LandscapeLeft
+		case .LandscapeLeft:
+			return .LandscapeRight
+		default:
+			return .Portrait
+		}
+	}
+	
+	func toInterfaceOrientationMask() -> UIInterfaceOrientationMask {
 		switch self {
 		case .Portrait:
 			return .Portrait
