@@ -60,8 +60,11 @@ public class DKCamera: UIViewController {
 		return UIImagePickerController.isSourceTypeAvailable(.Camera)
 	}
 	
+	/// Determines whether or not the rotation is enabled.
+	public var allowsRotate = false
+	
 	public let captureSession = AVCaptureSession()
-	public var previewLayer: AVCaptureVideoPreviewLayer?
+	public var previewLayer: AVCaptureVideoPreviewLayer!
 	private var beginZoomScale: CGFloat = 1.0
 	private var zoomScale: CGFloat = 1.0
 	
@@ -70,7 +73,10 @@ public class DKCamera: UIViewController {
 	public var captureDeviceBack: AVCaptureDevice?
 	private weak var stillImageOutput: AVCaptureStillImageOutput?
 	
-	public var currentOrientation = UIInterfaceOrientation.Portrait
+	public var contentView = UIView()
+	
+	public var originalOrientation = UIDevice.currentDevice().orientation
+	public var currentOrientation = UIDevice.currentDevice().orientation
 	public let motionManager = CMMotionManager()
 	
 	public lazy var flashButton: UIButton = {
@@ -100,9 +106,13 @@ public class DKCamera: UIViewController {
 		}
 		
 		if !self.motionManager.accelerometerActive {
-			self.motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { (accelerometerData, error) -> Void in
+			self.motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue()!, withHandler: { accelerometerData, error in
 				if error == nil {
-					self.outputAccelertionData(accelerometerData!.acceleration)
+					let currentOrientation = accelerometerData!.acceleration.toDeviceOrientation() ?? self.currentOrientation
+					if self.currentOrientation != currentOrientation {
+						self.currentOrientation = currentOrientation
+						self.updateLayoutForCurrentOrientation()
+					}
 				} else {
 					print("error while update accelerometer: \(error!.localizedDescription)", terminator: "")
 				}
@@ -121,6 +131,10 @@ public class DKCamera: UIViewController {
 	override public func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
 		// Dispose of any resources that can be recreated.
+	}
+	
+	public override func prefersStatusBarHidden() -> Bool {
+		return true
 	}
 	
 	public func setupDevices() {
@@ -143,7 +157,10 @@ public class DKCamera: UIViewController {
     
 	public func setupUI() {
 		self.view.backgroundColor = UIColor.blackColor()
-		let contentView = self.view
+		self.view.addSubview(self.contentView)
+		self.contentView.backgroundColor = UIColor.clearColor()
+		self.contentView.bounds.size = self.view.bounds.size
+		self.contentView.center = self.view.center
 		
 		let bottomViewHeight: CGFloat = 70
 		bottomView.bounds.size = CGSize(width: contentView.bounds.width, height: bottomViewHeight)
@@ -254,11 +271,9 @@ public class DKCamera: UIViewController {
 					
 					if error == nil {
 						let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
-						
-						if let didFinishCapturingImage = self.didFinishCapturingImage,
-							image = UIImage(data: imageData) {
-								
-								didFinishCapturingImage(image: image)
+
+						if let didFinishCapturingImage = self.didFinishCapturingImage, image = UIImage(data: imageData) {
+							didFinishCapturingImage(image: image)
 						}
 					} else {
 						print("error while capturing still image: \(error!.localizedDescription)", terminator: "")
@@ -278,7 +293,7 @@ public class DKCamera: UIViewController {
 			self.zoomScale = min(4.0, max(1.0, self.beginZoomScale * gesture.scale))
 			CATransaction.begin()
 			CATransaction.setAnimationDuration(0.025)
-			self.previewLayer?.setAffineTransform(CGAffineTransformMakeScale(self.zoomScale, self.zoomScale))
+			self.previewLayer.setAffineTransform(CGAffineTransformMakeScale(self.zoomScale, self.zoomScale))
 			CATransaction.commit()
 		}
 	}
@@ -351,13 +366,13 @@ public class DKCamera: UIViewController {
 		}
 		
 		self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
-		self.previewLayer?.videoGravity = AVLayerVideoGravityResizeAspect
-		let rootLayer = self.view.layer
-		self.previewLayer?.frame = CGRect(origin: CGPointZero,
-			size: CGSize(width: min(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height),
-			height: max(UIScreen.mainScreen().bounds.width, UIScreen.mainScreen().bounds.height)))
+		self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
+		self.previewLayer.connection.videoOrientation = self.currentOrientation.toAVCaptureVideoOrientation()
+		self.previewLayer.frame = self.view.bounds
 		
-		rootLayer.insertSublayer(self.previewLayer!, atIndex: 0)
+		let rootLayer = self.view.layer
+		rootLayer.masksToBounds = true
+		rootLayer.insertSublayer(self.previewLayer, atIndex: 0)
 	}
 	
 	public func setupCurrentDevice() {
@@ -432,7 +447,7 @@ public class DKCamera: UIViewController {
 			return
 		}
 		
-		let focusPoint = self.previewLayer!.captureDevicePointOfInterestForPoint(touchPoint)
+		let focusPoint = self.previewLayer.captureDevicePointOfInterestForPoint(touchPoint)
 		
 		showFocusViewAtPoint(touchPoint)
 		
@@ -454,79 +469,94 @@ public class DKCamera: UIViewController {
 	
 	// MARK: - Handles Orientation
 	
-	public func setupMotionManager() {
-		self.motionManager.accelerometerUpdateInterval = 0.2
-		self.motionManager.gyroUpdateInterval = 0.2
-	}
-	
-	public func outputAccelertionData(acceleration: CMAcceleration) {
-		var currentOrientation: UIInterfaceOrientation?
-		
-		if acceleration.x >= 0.75 {
-			currentOrientation = .LandscapeLeft
-		} else if acceleration.x <= -0.75 {
-			currentOrientation = .LandscapeRight
-		} else if acceleration.y <= -0.75 {
-			currentOrientation = .Portrait
-		} else if acceleration.y >= 0.75 {
-			currentOrientation = .PortraitUpsideDown
-		} else {
-			return
-		}
-		
-		if self.currentOrientation != currentOrientation! {
-			self.currentOrientation = currentOrientation!
-			
-			self.updateUIForCurrentOrientation()
-		}
-	}
-	
-	public func updateUIForCurrentOrientation() {
-		var degree = 0.0
-		
-		switch self.currentOrientation {
-		case .Portrait:
-			degree = 0
-		case .PortraitUpsideDown:
-			degree = 180
-		case .LandscapeLeft:
-			degree = 270
-		case .LandscapeRight:
-			degree = 90
-		default:
-			degree = 0.0
-		}
-		
-		let rotateAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, degreesToRadians(degree))
-		
-		UIView.animateWithDuration(0.2) { () -> Void in
-			self.flashButton.transform = rotateAffineTransform
-			self.cameraSwitchButton.transform = rotateAffineTransform
-		}
-	}
-	
 	public override func shouldAutorotate() -> Bool {
 		return false
 	}
 	
-	public override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-		return UIInterfaceOrientationMask.Portrait
+	public func setupMotionManager() {
+		self.motionManager.accelerometerUpdateInterval = 0.5
+		self.motionManager.gyroUpdateInterval = 0.5
 	}
 	
+	public func updateLayoutForCurrentOrientation() {
+		let newAngle = self.currentOrientation.toAngleRelativeToPortrait() - self.originalOrientation.toAngleRelativeToPortrait()
+
+		if self.allowsRotate {
+			var contentViewNewSize: CGSize!
+			let width = self.view.bounds.width
+			let height = self.view.bounds.height
+			if UIDeviceOrientationIsLandscape(self.currentOrientation) {
+				contentViewNewSize = CGSize(width: max(width, height), height: min(width, height))
+			} else {
+				contentViewNewSize = CGSize(width: min(width, height), height: max(width, height))
+			}
+			
+			UIView.animateWithDuration(0.2) {
+				self.contentView.bounds.size = contentViewNewSize
+				self.contentView.transform = CGAffineTransformMakeRotation(newAngle)
+			}
+		} else {
+			let rotateAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, newAngle)
+			
+			UIView.animateWithDuration(0.2) {
+				self.flashButton.transform = rotateAffineTransform
+				self.cameraSwitchButton.transform = rotateAffineTransform
+			}
+		}
+	}
+
 }
 
 // MARK: - Utilities
 
-public extension UIInterfaceOrientation {
+public extension UIDeviceOrientation {
 	
 	func toAVCaptureVideoOrientation() -> AVCaptureVideoOrientation {
-		return AVCaptureVideoOrientation(rawValue: self.rawValue)!
+		switch self {
+		case .Portrait:
+			return .Portrait
+		case .PortraitUpsideDown:
+			return .PortraitUpsideDown
+		case .LandscapeRight:
+			return .LandscapeLeft
+		case .LandscapeLeft:
+			return .LandscapeRight
+		default:
+			return .Portrait
+		}
+	}
+	
+	func toAngleRelativeToPortrait() -> CGFloat {
+		switch self {
+		case .Portrait:
+			return 0
+		case .PortraitUpsideDown:
+			return CGFloat(M_PI)
+		case .LandscapeRight:
+			return CGFloat(-M_PI_2)
+		case .LandscapeLeft:
+			return CGFloat(M_PI_2)
+		default:
+			return 0
+		}
 	}
 	
 }
 
-public func degreesToRadians(degree: Double) -> CGFloat {
-	return CGFloat(degree / 180.0 * M_PI)
+public extension CMAcceleration {
+	func toDeviceOrientation() -> UIDeviceOrientation? {
+		if self.x >= 0.75 {
+			return .LandscapeRight
+		} else if self.x <= -0.75 {
+			return .LandscapeLeft
+		} else if self.y <= -0.75 {
+			return .Portrait
+		} else if self.y >= 0.75 {
+			return .PortraitUpsideDown
+		} else {
+			return nil
+		}
+	}
 }
 
 // MARK: - Rersources
