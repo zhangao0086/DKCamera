@@ -60,6 +60,9 @@ public class DKCamera: UIViewController {
 		return UIImagePickerController.isSourceTypeAvailable(.Camera)
 	}
 	
+	/// Determines whether or not the rotation is enabled.
+	public var allowsRotate = false
+	
 	public let captureSession = AVCaptureSession()
 	public var previewLayer: AVCaptureVideoPreviewLayer!
 	private var beginZoomScale: CGFloat = 1.0
@@ -476,20 +479,29 @@ public class DKCamera: UIViewController {
 	}
 	
 	public func updateLayoutForCurrentOrientation() {
-		var contentViewNewSize: CGSize!
-		let width = self.view.bounds.width
-		let height = self.view.bounds.height
-		if UIDeviceOrientationIsLandscape(self.currentOrientation) {
-			contentViewNewSize = CGSize(width: max(width, height), height: min(width, height))
-		} else {
-			contentViewNewSize = CGSize(width: min(width, height), height: max(width, height))
-		}
-		
 		let newAngle = self.currentOrientation.toAngleRelativeToPortrait() - self.originalOrientation.toAngleRelativeToPortrait()
-		
-		UIView.animateWithDuration(0.25) {
-			self.contentView.bounds.size = contentViewNewSize
-			self.contentView.transform = CGAffineTransformMakeRotation(newAngle)
+
+		if self.allowsRotate {
+			var contentViewNewSize: CGSize!
+			let width = self.view.bounds.width
+			let height = self.view.bounds.height
+			if UIDeviceOrientationIsLandscape(self.currentOrientation) {
+				contentViewNewSize = CGSize(width: max(width, height), height: min(width, height))
+			} else {
+				contentViewNewSize = CGSize(width: min(width, height), height: max(width, height))
+			}
+			
+			UIView.animateWithDuration(0.2) {
+				self.contentView.bounds.size = contentViewNewSize
+				self.contentView.transform = CGAffineTransformMakeRotation(newAngle)
+			}
+		} else {
+			let rotateAffineTransform = CGAffineTransformRotate(CGAffineTransformIdentity, newAngle)
+			
+			UIView.animateWithDuration(0.2) {
+				self.flashButton.transform = rotateAffineTransform
+				self.cameraSwitchButton.transform = rotateAffineTransform
+			}
 		}
 	}
 
