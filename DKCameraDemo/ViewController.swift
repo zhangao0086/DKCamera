@@ -24,9 +24,9 @@ class ViewController: UIViewController {
 
     @IBAction func capture() {        
         let camera = DKCamera()
-        
+		
         camera.didCancel = { () in
-            print("didCancelled")
+            print("didCancel")
             
             self.dismissViewControllerAnimated(true, completion: nil)
         }
@@ -39,8 +39,7 @@ class ViewController: UIViewController {
             self.imageView?.image = image
         }
         self.presentViewController(camera, animated: true, completion: nil)
-        
     }
-    
+	
 }
 
