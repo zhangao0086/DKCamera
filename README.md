@@ -61,6 +61,9 @@ public var cameraOverlayView: UIView?
 public var flashMode:AVCaptureFlashMode = .Auto
 
 public class func isAvailable() -> Bool
+
+/// Determines whether or not the rotation is enabled.
+public var allowsRotate = false
 ```
 
 > If you are going to add a full-screen view as `cameraOverlayView`, maybe you should use the `DKCameraPassthroughView` or its subclass that have overriden the `hitTest` method in order to the event passes through to the expected view.
