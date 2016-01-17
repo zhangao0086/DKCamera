@@ -262,7 +262,7 @@ public class DKCamera: UIViewController {
 		self.didCancel?()
 	}
 	
-	internal func takePicture() {
+	public func takePicture() {
 		let authStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
 		if authStatus == .Denied {
 			return
