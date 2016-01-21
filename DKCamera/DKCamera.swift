@@ -76,7 +76,7 @@ public class DKCamera: UIViewController {
 	public var contentView = UIView()
 	
 	public var originalOrientation: UIDeviceOrientation!
-	public var currentOrientation: UIDeviceOrientation!
+	public var currentOrientation: UIDeviceOrientation! = .Portrait
 	public let motionManager = CMMotionManager()
 	
 	public lazy var flashButton: UIButton = {
