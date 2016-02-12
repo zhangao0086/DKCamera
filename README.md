@@ -18,7 +18,7 @@ A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` fra
 
 ## Installation
 #### iOS 8 and newer
-DKCamera is available on Cocoapods. Simply add the following line to your podfile:
+DKCamera is available on CocoaPods. Simply add the following line to your podfile:
 
 ```ruby
 # For latest release in cocoapods
