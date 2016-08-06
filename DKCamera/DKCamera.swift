@@ -422,7 +422,7 @@ public class DKCamera: UIViewController {
     
     public func updateFlashMode() {
         if let currentDevice = self.currentDevice
-            where currentDevice.flashAvailable {
+            where currentDevice.flashAvailable && currentDevice.isFlashModeSupported(self.flashMode) {
             try! currentDevice.lockForConfiguration()
             currentDevice.flashMode = self.flashMode
             currentDevice.unlockForConfiguration()
