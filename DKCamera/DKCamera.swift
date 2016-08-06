@@ -284,8 +284,18 @@ public class DKCamera: UIViewController {
                     if error == nil {
                         let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
                         
-                        if let didFinishCapturingImage = self.didFinishCapturingImage, image = UIImage(data: imageData) {
-                            didFinishCapturingImage(image: image)
+                        if let didFinishCapturingImage = self.didFinishCapturingImage, takenImage = UIImage(data: imageData) {
+                            
+                            let outputRect = self.previewLayer.metadataOutputRectOfInterestForRect(self.previewLayer.bounds)
+                            let takenCGImage = takenImage.CGImage
+                            let width = CGFloat(CGImageGetWidth(takenCGImage))
+                            let height = CGFloat(CGImageGetHeight(takenCGImage))
+                            let cropRect = CGRectMake(outputRect.origin.x * width, outputRect.origin.y * height, outputRect.size.width * width, outputRect.size.height * height)
+                            
+                            let cropCGImage = CGImageCreateWithImageInRect(takenCGImage, cropRect)
+                            let cropTakenImage = UIImage(CGImage: cropCGImage!, scale: 1, orientation: takenImage.imageOrientation)
+                            
+                            didFinishCapturingImage(image: cropTakenImage)
                         }
                     } else {
                         print("error while capturing still image: \(error!.localizedDescription)", terminator: "")
@@ -380,7 +390,7 @@ public class DKCamera: UIViewController {
         }
         
         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
-        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspect
+        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         self.previewLayer.frame = self.view.bounds
         
         let rootLayer = self.view.layer
