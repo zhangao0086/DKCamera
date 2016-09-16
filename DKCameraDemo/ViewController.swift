@@ -28,17 +28,17 @@ class ViewController: UIViewController {
         camera.didCancel = { () in
             print("didCancel")
             
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
         }
 
         camera.didFinishCapturingImage = {(image: UIImage) in
             print("didFinishCapturingImage")
             
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
             
             self.imageView?.image = image
         }
-        self.presentViewController(camera, animated: true, completion: nil)
+        self.present(camera, animated: true, completion: nil)
     }
 	
 }
