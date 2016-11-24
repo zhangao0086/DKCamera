@@ -38,41 +38,39 @@ let camera = DKCamera()
 camera.didCancel = { () in
 	print("didCancel")
 
-	self.dismissViewControllerAnimated(true, completion: nil)
+	self.dismiss(animated: true, completion: nil)
 }
 
 camera.didFinishCapturingImage = {(image: UIImage) in
 	print("didFinishCapturingImage")
 	print(image)
 
-	self.dismissViewControllerAnimated(true, completion: nil)
+	self.dismiss(animated: true, completion: nil)
 }
-self.presentViewController(camera, animated: true, completion: nil)
+self.present(camera, animated: true, completion: nil)
 
 ````
 
 ### You also can use these APIs:
 
 ```swift
-public var cameraOverlayView: UIView?
+open var cameraOverlayView: UIView?
 
 /// The flashModel will to be remembered to next use.
-public var flashMode:AVCaptureFlashMode = .Auto
+open var flashMode:AVCaptureFlashMode!
 
-public class func isAvailable() -> Bool
+open class func isAvailable() -> Bool
 
 /// Determines whether or not the rotation is enabled.
-public var allowsRotate = false
+open var allowsRotate = false
 
 /// set to NO to hide all standard camera UI. default is YES.
-camera.showsCameraControls = false
+open var showsCameraControls = true
 
-camera.defaultCaptureDevice = .front
+open var defaultCaptureDevice = DKCameraDeviceSourceType.rear
 
 /// Notify the listener of the detected faces in the preview frame.
-camera.onFaceDetection = { (faces: [AVMetadataFaceObject]) in
-      
-}
+open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
 ```
 
 > If you are going to add a full-screen view as `cameraOverlayView`, maybe you should use the `DKCameraPassthroughView` or its subclass that have overriden the `hitTest` method in order to the event passes through to the expected view.
