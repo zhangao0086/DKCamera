@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name          = "DKCamera"
-  s.version       = "1.2.10"
+  s.version       = "1.3.1"
   s.summary       = "A light weight & simple & easy camera for iOS by Swift."
   s.homepage      = "https://github.com/zhangao0086/DKCamera"
   s.license       = { :type => "MIT", :file => "LICENSE" }
@@ -12,4 +12,6 @@ Pod::Spec.new do |s|
   s.resource      = "DKCamera/DKCameraResource.bundle"
   s.frameworks    = "Foundation", "UIKit", "AVFoundation", "CoreMotion"
   s.requires_arc  = true
+
+  s.pod_target_xcconfig = { 'SWIFT_VERSION' => '3.0' }
 end
