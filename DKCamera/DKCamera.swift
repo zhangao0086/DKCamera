@@ -17,7 +17,12 @@ open class DKCameraPassthroughView: UIView {
     }
 }
 
-open class DKCamera: UIViewController {
+@objc
+public enum DKCameraDeviceSourceType : Int {
+    case front, rear
+}
+
+open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     open class func checkCameraPermission(_ handler: @escaping (_ granted: Bool) -> Void) {
         func hasCameraPermission() -> Bool {
@@ -38,7 +43,9 @@ open class DKCamera: UIViewController {
     
     open var didCancel: (() -> Void)?
     open var didFinishCapturingImage: ((_ image: UIImage) -> Void)?
+    open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
     
+    /// Be careful this may cause the view to load prematurely.
     open var cameraOverlayView: UIView? {
         didSet {
             if let cameraOverlayView = cameraOverlayView {
@@ -61,16 +68,25 @@ open class DKCamera: UIViewController {
     }
     
     /// Determines whether or not the rotation is enabled.
+    
     open var allowsRotate = false
+    
+    /// set to NO to hide all standard camera UI. default is YES
+    open var showsCameraControls = true {
+        didSet {
+            self.contentView.isHidden = !self.showsCameraControls
+        }
+    }
     
     open let captureSession = AVCaptureSession()
     open var previewLayer: AVCaptureVideoPreviewLayer!
     fileprivate var beginZoomScale: CGFloat = 1.0
     fileprivate var zoomScale: CGFloat = 1.0
     
+    open var defaultCaptureDevice = DKCameraDeviceSourceType.rear
     open var currentDevice: AVCaptureDevice?
     open var captureDeviceFront: AVCaptureDevice?
-    open var captureDeviceBack: AVCaptureDevice?
+    open var captureDeviceRear: AVCaptureDevice?
     fileprivate weak var stillImageOutput: AVCaptureStillImageOutput?
     
     open var contentView = UIView()
@@ -155,7 +171,7 @@ open class DKCamera: UIViewController {
         
         for device in devices {
             if device.position == .back {
-                self.captureDeviceBack = device
+                self.captureDeviceRear = device
             }
             
             if device.position == .front {
@@ -163,7 +179,12 @@ open class DKCamera: UIViewController {
             }
         }
         
-        self.currentDevice = self.captureDeviceBack ?? self.captureDeviceFront
+        switch self.defaultCaptureDevice {
+        case .front:
+            self.currentDevice = self.captureDeviceFront ?? self.captureDeviceRear
+        case .rear:
+            self.currentDevice = self.captureDeviceRear ?? self.captureDeviceFront
+        }
     }
     
     let bottomView = UIView()
@@ -330,8 +351,8 @@ open class DKCamera: UIViewController {
     // MARK: - Handles Switch Camera
     
     internal func switchCamera() {
-        self.currentDevice = self.currentDevice == self.captureDeviceBack ?
-            self.captureDeviceFront : self.captureDeviceBack
+        self.currentDevice = self.currentDevice == self.captureDeviceRear ?
+            self.captureDeviceFront : self.captureDeviceRear
         
         self.setupCurrentDevice()
     }
@@ -374,6 +395,12 @@ open class DKCamera: UIViewController {
         self.flashButton.sizeToFit()
     }
     
+    // MARK: - AVCaptureMetadataOutputObjectsDelegate
+    
+    public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
+        self.onFaceDetection?(metadataObjects as! [AVMetadataFaceObject])
+    }
+    
     // MARK: - Capture Session
     
     open func beginSession() {
@@ -385,6 +412,16 @@ open class DKCamera: UIViewController {
         if self.captureSession.canAddOutput(stillImageOutput) {
             self.captureSession.addOutput(stillImageOutput)
             self.stillImageOutput = stillImageOutput
+        }
+        
+        if self.onFaceDetection != nil {
+            let metadataOutput = AVCaptureMetadataOutput()
+            metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue(label: "MetadataOutputQueue"))
+            
+            if self.captureSession.canAddOutput(metadataOutput) {
+                self.captureSession.addOutput(metadataOutput)
+                metadataOutput.metadataObjectTypes = [AVMetadataObjectTypeFace]
+            }
         }
         
         self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)

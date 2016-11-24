@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
 
@@ -24,13 +25,16 @@ class ViewController: UIViewController {
 
     @IBAction func capture() {        
         let camera = DKCamera()
-		
+//		camera.showsCameraControls = false
+//        camera.defaultCaptureDevice = .front
+//        camera.onFaceDetection = { (faces: [AVMetadataFaceObject]) in
+//            
+//        }
         camera.didCancel = { () in
             print("didCancel")
             
             self.dismiss(animated: true, completion: nil)
         }
-
         camera.didFinishCapturingImage = {(image: UIImage) in
             print("didFinishCapturingImage")
             
