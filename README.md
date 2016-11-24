@@ -26,6 +26,7 @@ pod 'DKCamera'
 ```
 
 #### iOS 7.x
+Please use the `1.2.11` tag.  
 To use Swift libraries on apps that support iOS 7, you must manually copy the files into your application project.
 [CocoaPods only supports Swift on OS X 10.9 and newer, and iOS 8 and newer.](https://github.com/CocoaPods/blog.cocoapods.org/commit/6933ae5ccfc1e0b39dd23f4ec67d7a083975836d)
 
@@ -62,6 +63,16 @@ public class func isAvailable() -> Bool
 
 /// Determines whether or not the rotation is enabled.
 public var allowsRotate = false
+
+/// set to NO to hide all standard camera UI. default is YES.
+camera.showsCameraControls = false
+
+camera.defaultCaptureDevice = .front
+
+/// Notify the listener of the detected faces in the preview frame.
+camera.onFaceDetection = { (faces: [AVMetadataFaceObject]) in
+      
+}
 ```
 
 > If you are going to add a full-screen view as `cameraOverlayView`, maybe you should use the `DKCameraPassthroughView` or its subclass that have overriden the `hitTest` method in order to the event passes through to the expected view.

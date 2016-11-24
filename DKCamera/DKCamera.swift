@@ -43,6 +43,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     open var didCancel: (() -> Void)?
     open var didFinishCapturingImage: ((_ image: UIImage) -> Void)?
+    
+    /// Notify the listener of the detected faces in the preview frame.
     open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
     
     /// Be careful this may cause the view to load prematurely.
@@ -71,7 +73,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     open var allowsRotate = false
     
-    /// set to NO to hide all standard camera UI. default is YES
+    /// set to NO to hide all standard camera UI. default is YES.
     open var showsCameraControls = true {
         didSet {
             self.contentView.isHidden = !self.showsCameraControls
