@@ -17,6 +17,19 @@ open class DKCameraPassthroughView: UIView {
     }
 }
 
+extension AVMetadataFaceObject {
+
+    open func realBounds(inPreviewLayer previewLayer: AVCaptureVideoPreviewLayer) -> CGRect {
+        var bounds = CGRect()
+        let previewSize = previewLayer.bounds.size
+        bounds.origin = CGPoint(x: previewSize.width * (1 - self.bounds.origin.y - self.bounds.size.height / 2),
+                                y: previewSize.height * (self.bounds.origin.x + self.bounds.size.width / 2))
+        bounds.size = CGSize(width: self.bounds.width * previewSize.height,
+                             height: self.bounds.height * previewSize.width)
+        return bounds
+    }
+}
+
 @objc
 public enum DKCameraDeviceSourceType : Int {
     case front, rear
