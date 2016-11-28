@@ -119,9 +119,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if !self.captureSession.isRunning {
-            self.captureSession.startRunning()
-        }
+        self.startSession()
         
         if !self.motionManager.isAccelerometerActive {
             self.motionManager.startAccelerometerUpdates(to: OperationQueue.current!, withHandler: { accelerometerData, error in
@@ -155,7 +153,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        self.captureSession.stopRunning()
+        self.stopSession()
         self.motionManager.stopAccelerometerUpdates()
     }
     
@@ -342,6 +340,18 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         case .rear:
             self.currentDevice = self.captureDeviceRear ?? self.captureDeviceFront
         }
+    }
+    
+    // MARK: - Session
+    
+    open func startSession() {
+        if !self.captureSession.isRunning {
+            self.captureSession.startRunning()
+        }
+    }
+    
+    open func stopSession() {
+        self.captureSession.stopRunning()
     }
     
     // MARK: - Callbacks
