@@ -104,14 +104,14 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         return flashButton
     }()
     open var cameraSwitchButton: UIButton!
-    
+    open var captureButton: UIButton!
     
     override open func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupDevices()
         self.setupUI()
-        self.beginSession()
+        self.setupSession()
         
         self.setupMotionManager()
     }
@@ -168,29 +168,9 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         return true
     }
     
-    open func setupDevices() {
-        let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! [AVCaptureDevice]
-        
-        for device in devices {
-            if device.position == .back {
-                self.captureDeviceRear = device
-            }
-            
-            if device.position == .front {
-                self.captureDeviceFront = device
-            }
-        }
-        
-        switch self.defaultCaptureDevice {
-        case .front:
-            self.currentDevice = self.captureDeviceFront ?? self.captureDeviceRear
-        case .rear:
-            self.currentDevice = self.captureDeviceRear ?? self.captureDeviceFront
-        }
-    }
+    // MARK: - Setup
     
     let bottomView = UIView()
-    
     open func setupUI() {
         self.view.backgroundColor = UIColor.black
         self.view.addSubview(self.contentView)
@@ -246,7 +226,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             let captureButton = DKCaptureButton()
             captureButton.addTarget(self, action: #selector(DKCamera.takePicture), for: .touchUpInside)
             captureButton.bounds.size = CGSize(width: bottomViewHeight,
-                height: bottomViewHeight).applying(CGAffineTransform(scaleX: 0.9, y: 0.9))
+                                               height: bottomViewHeight).applying(CGAffineTransform(scaleX: 0.9, y: 0.9))
             captureButton.layer.cornerRadius = captureButton.bounds.height / 2
             captureButton.layer.borderColor = UIColor.white.cgColor
             captureButton.layer.borderWidth = 2
@@ -258,6 +238,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         captureButton.center = CGPoint(x: bottomView.bounds.width / 2, y: bottomView.bounds.height / 2)
         captureButton.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin]
         bottomView.addSubview(captureButton)
+        self.captureButton = captureButton
         
         // cancel button
         let cancelButton: UIButton = {
@@ -280,6 +261,89 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         contentView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(DKCamera.handleFocus(_:))))
     }
     
+    open func setupSession() {
+        self.captureSession.sessionPreset = AVCaptureSessionPresetPhoto
+        
+        self.setupCurrentDevice()
+        
+        let stillImageOutput = AVCaptureStillImageOutput()
+        if self.captureSession.canAddOutput(stillImageOutput) {
+            self.captureSession.addOutput(stillImageOutput)
+            self.stillImageOutput = stillImageOutput
+        }
+        
+        if self.onFaceDetection != nil {
+            let metadataOutput = AVCaptureMetadataOutput()
+            metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue(label: "MetadataOutputQueue"))
+            
+            if self.captureSession.canAddOutput(metadataOutput) {
+                self.captureSession.addOutput(metadataOutput)
+                metadataOutput.metadataObjectTypes = [AVMetadataObjectTypeFace]
+            }
+        }
+        
+        self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
+        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
+        self.previewLayer.frame = self.view.bounds
+        
+        let rootLayer = self.view.layer
+        rootLayer.masksToBounds = true
+        rootLayer.insertSublayer(self.previewLayer, at: 0)
+    }
+    
+    open func setupCurrentDevice() {
+        if let currentDevice = self.currentDevice {
+            
+            if currentDevice.isFlashAvailable {
+                self.flashButton.isHidden = false
+                self.flashMode = self.flashModeFromUserDefaults()
+            } else {
+                self.flashButton.isHidden = true
+            }
+            
+            for oldInput in self.captureSession.inputs as! [AVCaptureInput] {
+                self.captureSession.removeInput(oldInput)
+            }
+            
+            let frontInput = try? AVCaptureDeviceInput(device: self.currentDevice)
+            if self.captureSession.canAddInput(frontInput) {
+                self.captureSession.addInput(frontInput)
+            }
+            
+            try! currentDevice.lockForConfiguration()
+            if currentDevice.isFocusModeSupported(.continuousAutoFocus) {
+                currentDevice.focusMode = .continuousAutoFocus
+            }
+            
+            if currentDevice.isExposureModeSupported(.continuousAutoExposure) {
+                currentDevice.exposureMode = .continuousAutoExposure
+            }
+            
+            currentDevice.unlockForConfiguration()
+        }
+    }
+    
+    open func setupDevices() {
+        let devices = AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! [AVCaptureDevice]
+        
+        for device in devices {
+            if device.position == .back {
+                self.captureDeviceRear = device
+            }
+            
+            if device.position == .front {
+                self.captureDeviceFront = device
+            }
+        }
+        
+        switch self.defaultCaptureDevice {
+        case .front:
+            self.currentDevice = self.captureDeviceFront ?? self.captureDeviceRear
+        case .rear:
+            self.currentDevice = self.captureDeviceRear ?? self.captureDeviceFront
+        }
+    }
+    
     // MARK: - Callbacks
     
     internal func dismiss() {
@@ -293,7 +357,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
         
         if let stillImageOutput = self.stillImageOutput {
-            self.stillImageOutput = nil // Just taking only one image.
+            self.captureButton.isEnabled = false
             
             DispatchQueue.global().async(execute: {
                 if let connection = stillImageOutput.connection(withMediaType: AVMediaTypeVideo) {
@@ -316,6 +380,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                                 let cropTakenImage = UIImage(cgImage: cropCGImage!, scale: 1, orientation: takenImage.imageOrientation)
                                 
                                 didFinishCapturingImage(cropTakenImage)
+                                
+                                self.captureButton.isEnabled = true
                             }
                         } else {
                             print("error while capturing still image: \(error!.localizedDescription)", terminator: "")
@@ -401,70 +467,6 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     public func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
         self.onFaceDetection?(metadataObjects as! [AVMetadataFaceObject])
-    }
-    
-    // MARK: - Capture Session
-    
-    open func beginSession() {
-        self.captureSession.sessionPreset = AVCaptureSessionPresetPhoto
-        
-        self.setupCurrentDevice()
-        
-        let stillImageOutput = AVCaptureStillImageOutput()
-        if self.captureSession.canAddOutput(stillImageOutput) {
-            self.captureSession.addOutput(stillImageOutput)
-            self.stillImageOutput = stillImageOutput
-        }
-        
-        if self.onFaceDetection != nil {
-            let metadataOutput = AVCaptureMetadataOutput()
-            metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue(label: "MetadataOutputQueue"))
-            
-            if self.captureSession.canAddOutput(metadataOutput) {
-                self.captureSession.addOutput(metadataOutput)
-                metadataOutput.metadataObjectTypes = [AVMetadataObjectTypeFace]
-            }
-        }
-        
-        self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
-        self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
-        self.previewLayer.frame = self.view.bounds
-        
-        let rootLayer = self.view.layer
-        rootLayer.masksToBounds = true
-        rootLayer.insertSublayer(self.previewLayer, at: 0)
-    }
-    
-    open func setupCurrentDevice() {
-        if let currentDevice = self.currentDevice {
-            
-            if currentDevice.isFlashAvailable {
-                self.flashButton.isHidden = false
-                self.flashMode = self.flashModeFromUserDefaults()
-            } else {
-                self.flashButton.isHidden = true
-            }
-            
-            for oldInput in self.captureSession.inputs as! [AVCaptureInput] {
-                self.captureSession.removeInput(oldInput)
-            }
-            
-            let frontInput = try? AVCaptureDeviceInput(device: self.currentDevice)
-            if self.captureSession.canAddInput(frontInput) {
-                self.captureSession.addInput(frontInput)
-            }
-            
-            try! currentDevice.lockForConfiguration()
-            if currentDevice.isFocusModeSupported(.continuousAutoFocus) {
-                currentDevice.focusMode = .continuousAutoFocus
-            }
-            
-            if currentDevice.isExposureModeSupported(.continuousAutoExposure) {
-                currentDevice.exposureMode = .continuousAutoExposure
-            }
-            
-            currentDevice.unlockForConfiguration()
-        }
     }
     
     open func updateFlashMode() {
