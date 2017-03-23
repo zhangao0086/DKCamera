@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5C80BAD61E797AC700FC9146 /* DKCameraResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */; };
 		9C0FA1C51B93468E0020B5FF /* DKCameraResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */; };
 		9C50A7E71B921E640044F569 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A7E61B921E640044F569 /* AppDelegate.swift */; };
 		9C50A7E91B921E640044F569 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A7E81B921E640044F569 /* ViewController.swift */; };
@@ -28,6 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DKCameraResource.swift; sourceTree = "<group>"; };
 		9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DKCameraResource.bundle; sourceTree = "<group>"; };
 		9C50A7E11B921E640044F569 /* DKCameraDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DKCameraDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C50A7E51B921E640044F569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				9C50A8071B921F1C0044F569 /* DKCamera.swift */,
+				5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */,
 				9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */,
 			);
 			path = DKCamera;
@@ -232,6 +235,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C50A7E91B921E640044F569 /* ViewController.swift in Sources */,
+				5C80BAD61E797AC700FC9146 /* DKCameraResource.swift in Sources */,
 				9C50A8081B921F1C0044F569 /* DKCamera.swift in Sources */,
 				9C50A7E71B921E640044F569 /* AppDelegate.swift in Sources */,
 			);
