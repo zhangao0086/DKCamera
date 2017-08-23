@@ -51,7 +51,7 @@ class ViewController: UIViewController {
             self.dismiss(animated: true, completion: nil)
         }
         
-        camera.didFinishCapturingImage = {(image: UIImage) in
+        camera.didFinishCapturingImage = {(image: UIImage?, data: Data?) in
             print("didFinishCapturingImage")
             
             self.dismiss(animated: true, completion: nil)
