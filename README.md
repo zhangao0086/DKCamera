@@ -1,7 +1,7 @@
 DKCamera
 =======================
 
- [![Build Status](https://secure.travis-ci.org/zhangao0086/DKCamera.svg)](http://travis-ci.org/zhangao0086/DKCamera) [![Version Status](http://img.shields.io/cocoapods/v/DKCamera.png)][docsLink] [![license MIT](http://img.shields.io/badge/license-MIT-orange.png)][mitLink]
+ [![Build Status](https://secure.travis-ci.org/zhangao0086/DKCamera.svg)](http://travis-ci.org/zhangao0086/DKCamera) [![Version Status](http://img.shields.io/cocoapods/v/DKCamera.png)][docsLink] [![license MIT](https://img.shields.io/cocoapods/l/DKCamera.svg?style=flat)][mitLink]
 <img width="50%" height="50%" src="https://raw.githubusercontent.com/zhangao0086/DKCamera/develop/Screenshot1.png" />
 ---
 
