@@ -129,7 +129,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     let cameraResource: DKCameraResource
     
-    init(cameraResource: DKCameraResource = DKDefaultCameraResource()) {
+    public init(cameraResource: DKCameraResource = DKDefaultCameraResource()) {
         self.cameraResource = cameraResource
         super.init(nibName: nil, bundle: nil)
     }
