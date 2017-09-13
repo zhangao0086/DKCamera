@@ -41,7 +41,7 @@ camera.didCancel = { () in
 	self.dismiss(animated: true, completion: nil)
 }
 
-camera.didFinishCapturingImage = {(image: UIImage?, data: Data?) in
+camera.didFinishCapturingImage = {(image: UIImage?, data: [AnyHashable : Any]?) in
     print("didFinishCapturingImage")
     
     self.dismiss(animated: true, completion: nil)
