@@ -521,7 +521,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             }
         }
         
-        if self.currentDevice == nil || self.currentDevice?.isFlashAvailable == false {
+        if self.currentDevice == nil || self.currentDevice?.isFocusPointOfInterestSupported == false {
             return
         }
         
