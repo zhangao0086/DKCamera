@@ -63,7 +63,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
     
     open var didCancel: (() -> Void)?
-    open var didFinishCapturingImage: ((_ image: UIImage?, _ data: Data?) -> Void)?
+    open var didFinishCapturingImage: ((_ image: UIImage, _ metadata: [AnyHashable : Any]?) -> Void)?
     
     /// Notify the listener of the detected faces in the preview frame.
     open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
@@ -433,17 +433,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                             let imageData = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(imageDataSampleBuffer)
                             
                             if let didFinishCapturingImage = self.didFinishCapturingImage, let imageData = imageData, let takenImage = UIImage(data: imageData) {
+                                let cropTakenImage = self.cropImage(with: takenImage)
+                                let metadata = self.extractMetadata(from: imageData)
                                 
-                                let outputRect = self.previewLayer.metadataOutputRectOfInterest(for: self.previewLayer.bounds)
-                                let takenCGImage = takenImage.cgImage!
-                                let width = CGFloat(takenCGImage.width)
-                                let height = CGFloat(takenCGImage.height)
-                                let cropRect = CGRect(x: outputRect.origin.x * width, y: outputRect.origin.y * height, width: outputRect.size.width * width, height: outputRect.size.height * height)
-                                
-                                let cropCGImage = takenCGImage.cropping(to: cropRect)
-                                let cropTakenImage = UIImage(cgImage: cropCGImage!, scale: 1, orientation: takenImage.imageOrientation)
-                                
-                                didFinishCapturingImage(cropTakenImage, imageData)
+                                didFinishCapturingImage(cropTakenImage, metadata)
                                 
                                 self.captureButton.isEnabled = true
                             }
@@ -455,6 +448,27 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             })
         }
         
+    }
+    
+    private func cropImage(with takenImage: UIImage) -> UIImage {
+        let outputRect = self.previewLayer.metadataOutputRectOfInterest(for: self.previewLayer.bounds)
+        let takenCGImage = takenImage.cgImage!
+        let width = CGFloat(takenCGImage.width)
+        let height = CGFloat(takenCGImage.height)
+        let cropRect = CGRect(x: outputRect.origin.x * width, y: outputRect.origin.y * height, width: outputRect.size.width * width, height: outputRect.size.height * height)
+        
+        let cropCGImage = takenCGImage.cropping(to: cropRect)
+        let cropTakenImage = UIImage(cgImage: cropCGImage!, scale: 1, orientation: takenImage.imageOrientation)
+
+        return cropTakenImage
+    }
+    
+    private func extractMetadata(from imageData: Data) -> [AnyHashable : Any]? {
+        if let source = CGImageSourceCreateWithData(imageData as CFData, nil) {
+            return CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [AnyHashable : Any]
+        } else {
+            return nil
+        }
     }
     
     // MARK: - Handles Zoom
