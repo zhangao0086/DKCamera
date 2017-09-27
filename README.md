@@ -11,10 +11,11 @@ A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` fra
 
 * Can be presenting or pushing or Integrating.
 * Suppressing the warning **"Snapshotting a view that has not been rendered results in an empty snapshot. Ensure your view has been rendered at least once before snapshotting or snapshot after screen updates."**(It seems a bug in iOS 8).
+* Compatible with iOS 11 and iPhone X
 
 ## Requirements
-* iOS 7.1+
-* ARC
+* Xcode 9
+* Swift 4
 
 ## Installation
 #### iOS 8 and newer
@@ -25,23 +26,26 @@ DKCamera is available on CocoaPods. Simply add the following line to your podfil
 pod 'DKCamera'
 ```
 
+#### Swift 3.x
+> use version < 1.5.0
+
 #### iOS 7.x
-Please use the `1.2.11` tag.  
-To use Swift libraries on apps that support iOS 7, you must manually copy the files into your application project.
-[CocoaPods only supports Swift on OS X 10.9 and newer, and iOS 8 and newer.](https://github.com/CocoaPods/blog.cocoapods.org/commit/6933ae5ccfc1e0b39dd23f4ec67d7a083975836d)
+> Please use the `1.2.11` tag.
+> To use Swift libraries on apps that support iOS 7, you must manually copy the files into your application project.
+> [CocoaPods only supports Swift on OS X 10.9 and newer, and iOS 8 and newer.](https://github.com/CocoaPods/blog.cocoapods.org/commit/6933ae5ccfc1e0b39dd23f4ec67d7a083975836d)
 
 ## Easy to use
 
 ```swift
 let camera = DKCamera()
 
-camera.didCancel = { () in
+camera.didCancel = {
 	print("didCancel")
 
 	self.dismiss(animated: true, completion: nil)
 }
 
-camera.didFinishCapturingImage = {(image: UIImage?, data: [AnyHashable : Any]?) in
+camera.didFinishCapturingImage = { (image: UIImage?, metadata: [AnyHashable : Any]?) in
     print("didFinishCapturingImage")
     
     self.dismiss(animated: true, completion: nil)
