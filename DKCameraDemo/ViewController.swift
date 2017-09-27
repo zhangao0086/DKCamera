@@ -34,7 +34,7 @@ class ViewController: UIViewController {
     @IBAction func capture() {        
         let camera = DKCamera()
 //		camera.showsCameraControls = false
-        camera.defaultCaptureDevice = .front
+//        camera.defaultCaptureDevice = .front
 //        camera.onFaceDetection = { [unowned self, camera] (faces: [AVMetadataFaceObject]) in
 //            if let face = faces.first {
 //                DispatchQueue.main.async {
@@ -51,7 +51,7 @@ class ViewController: UIViewController {
             self.dismiss(animated: true, completion: nil)
         }
         
-        camera.didFinishCapturingImage = {(image: UIImage?, data: [AnyHashable : Any]?) in
+        camera.didFinishCapturingImage = { (image: UIImage?, metadata: [AnyHashable : Any]?) in
             print("didFinishCapturingImage")
             
             self.dismiss(animated: true, completion: nil)
