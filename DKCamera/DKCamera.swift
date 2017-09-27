@@ -192,6 +192,21 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.motionManager.stopAccelerometerUpdates()
     }
     
+    /*
+         If setupUI() is called before the view has loaded,
+         it doesn't have safe area insets yet, so we need to
+         implement this function to do re-sizing if the safe area
+         insets change
+     */
+    open override func viewSafeAreaInsetsDidChange() {
+        if #available(iOS 11, *) {
+            // Handle iPhone X notch - resize bottom view to respect safe area
+            let safeAreaBottomInset = view.safeAreaInsets.bottom
+            bottomView.frame.origin = CGPoint(x: 0,
+                                              y: contentView.bounds.height - (bottomView.frame.size.height + safeAreaBottomInset))
+        }
+    }
+    
     override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -212,7 +227,15 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         let bottomViewHeight: CGFloat = 70
         bottomView.bounds.size = CGSize(width: contentView.bounds.width, height: bottomViewHeight)
-        bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - bottomViewHeight)
+        
+        if #available(iOS 11, *) {
+            // Handle iPhone X notch - respect safe area
+            let safeAreaBottomInset = view.safeAreaInsets.bottom
+            bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - (bottomViewHeight + safeAreaBottomInset))
+        } else {
+            bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - bottomViewHeight)
+        }
+        
         bottomView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
         bottomView.backgroundColor = UIColor(white: 0, alpha: 0.4)
         contentView.addSubview(bottomView)
