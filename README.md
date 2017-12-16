@@ -15,7 +15,7 @@ A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` fra
 
 ## Requirements
 * Xcode 9
-* Swift 4
+* Swift 3.2 & 4
 
 ## Installation
 #### iOS 8 and newer
@@ -25,9 +25,6 @@ DKCamera is available on CocoaPods. Simply add the following line to your podfil
 # For latest release in cocoapods
 pod 'DKCamera'
 ```
-
-#### Swift 3.x
-> use version < 1.5.0
 
 #### iOS 7.x
 > Please use the `1.2.11` tag.
