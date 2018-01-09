@@ -21,7 +21,7 @@
 		9CA4ACAA2004D9D5008AFD7D /* DKCamera.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9CA4ACAF2004D9F2008AFD7D /* DKCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A8071B921F1C0044F569 /* DKCamera.swift */; };
 		9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */; };
-		9CA4ACB12004D9F2008AFD7D /* DKCameraResource.bundle in Sources */ = {isa = PBXBuildFile; fileRef = 9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */; };
+		9CA4ACD92004E01D008AFD7D /* DKCameraResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -317,6 +317,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA4ACD92004E01D008AFD7D /* DKCameraResource.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,7 +349,6 @@
 			files = (
 				9CA4ACAF2004D9F2008AFD7D /* DKCamera.swift in Sources */,
 				9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */,
-				9CA4ACB12004D9F2008AFD7D /* DKCameraResource.bundle in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
