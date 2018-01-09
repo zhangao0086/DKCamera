@@ -16,6 +16,12 @@
 		9C50A7F11B921E640044F569 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9C50A7EF1B921E640044F569 /* LaunchScreen.xib */; };
 		9C50A7FD1B921E640044F569 /* DKCameraDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A7FC1B921E640044F569 /* DKCameraDemoTests.swift */; };
 		9C50A8081B921F1C0044F569 /* DKCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A8071B921F1C0044F569 /* DKCamera.swift */; };
+		9CA4ACA62004D9D5008AFD7D /* DKCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA4ACA42004D9D5008AFD7D /* DKCamera.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9CA4ACA92004D9D5008AFD7D /* DKCamera.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */; };
+		9CA4ACAA2004D9D5008AFD7D /* DKCamera.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9CA4ACAF2004D9F2008AFD7D /* DKCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A8071B921F1C0044F569 /* DKCamera.swift */; };
+		9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */; };
+		9CA4ACD92004E01D008AFD7D /* DKCameraResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,7 +32,28 @@
 			remoteGlobalIDString = 9C50A7E01B921E640044F569;
 			remoteInfo = DKCameraDemo;
 		};
+		9CA4ACA72004D9D5008AFD7D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C50A7D91B921E640044F569 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9CA4ACA12004D9D5008AFD7D;
+			remoteInfo = DKCamera;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9CA4ACAE2004D9D5008AFD7D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				9CA4ACAA2004D9D5008AFD7D /* DKCamera.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DKCameraResource.swift; sourceTree = "<group>"; };
@@ -42,6 +69,9 @@
 		9C50A7FB1B921E640044F569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C50A7FC1B921E640044F569 /* DKCameraDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DKCameraDemoTests.swift; sourceTree = "<group>"; };
 		9C50A8071B921F1C0044F569 /* DKCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DKCamera.swift; sourceTree = "<group>"; };
+		9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DKCamera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA4ACA42004D9D5008AFD7D /* DKCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DKCamera.h; sourceTree = "<group>"; };
+		9CA4ACA52004D9D5008AFD7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,10 +79,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA4ACA92004D9D5008AFD7D /* DKCamera.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9C50A7F31B921E640044F569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CA4AC9E2004D9D5008AFD7D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -67,6 +105,7 @@
 			children = (
 				9C50A7E31B921E640044F569 /* DKCameraDemo */,
 				9C50A7F91B921E640044F569 /* DKCameraDemoTests */,
+				9CA4ACA32004D9D5008AFD7D /* DKCamera */,
 				9C50A7E21B921E640044F569 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -76,6 +115,7 @@
 			children = (
 				9C50A7E11B921E640044F569 /* DKCameraDemo.app */,
 				9C50A7F61B921E640044F569 /* DKCameraDemoTests.xctest */,
+				9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -129,7 +169,27 @@
 			path = DKCamera;
 			sourceTree = SOURCE_ROOT;
 		};
+		9CA4ACA32004D9D5008AFD7D /* DKCamera */ = {
+			isa = PBXGroup;
+			children = (
+				9CA4ACA42004D9D5008AFD7D /* DKCamera.h */,
+				9CA4ACA52004D9D5008AFD7D /* Info.plist */,
+			);
+			path = DKCamera;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		9CA4AC9F2004D9D5008AFD7D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CA4ACA62004D9D5008AFD7D /* DKCamera.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		9C50A7E01B921E640044F569 /* DKCameraDemo */ = {
@@ -139,10 +199,12 @@
 				9C50A7DD1B921E640044F569 /* Sources */,
 				9C50A7DE1B921E640044F569 /* Frameworks */,
 				9C50A7DF1B921E640044F569 /* Resources */,
+				9CA4ACAE2004D9D5008AFD7D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				9CA4ACA82004D9D5008AFD7D /* PBXTargetDependency */,
 			);
 			name = DKCameraDemo;
 			productName = DKCameraDemo;
@@ -167,6 +229,24 @@
 			productReference = 9C50A7F61B921E640044F569 /* DKCameraDemoTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		9CA4ACA12004D9D5008AFD7D /* DKCamera */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9CA4ACAD2004D9D5008AFD7D /* Build configuration list for PBXNativeTarget "DKCamera" */;
+			buildPhases = (
+				9CA4AC9D2004D9D5008AFD7D /* Sources */,
+				9CA4AC9E2004D9D5008AFD7D /* Frameworks */,
+				9CA4AC9F2004D9D5008AFD7D /* Headers */,
+				9CA4ACA02004D9D5008AFD7D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DKCamera;
+			productName = DKCamera;
+			productReference = 9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -187,6 +267,11 @@
 						LastSwiftMigration = 0820;
 						TestTargetID = 9C50A7E01B921E640044F569;
 					};
+					9CA4ACA12004D9D5008AFD7D = {
+						CreatedOnToolsVersion = 9.2;
+						DevelopmentTeam = 85M74MVK78;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 9C50A7DC1B921E640044F569 /* Build configuration list for PBXProject "DKCameraDemo" */;
@@ -204,6 +289,7 @@
 			targets = (
 				9C50A7E01B921E640044F569 /* DKCameraDemo */,
 				9C50A7F51B921E640044F569 /* DKCameraDemoTests */,
+				9CA4ACA12004D9D5008AFD7D /* DKCamera */,
 			);
 		};
 /* End PBXProject section */
@@ -224,6 +310,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9CA4ACA02004D9D5008AFD7D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CA4ACD92004E01D008AFD7D /* DKCameraResource.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +343,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9CA4AC9D2004D9D5008AFD7D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CA4ACAF2004D9F2008AFD7D /* DKCamera.swift in Sources */,
+				9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -256,6 +359,11 @@
 			isa = PBXTargetDependency;
 			target = 9C50A7E01B921E640044F569 /* DKCameraDemo */;
 			targetProxy = 9C50A7F71B921E640044F569 /* PBXContainerItemProxy */;
+		};
+		9CA4ACA82004D9D5008AFD7D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9CA4ACA12004D9D5008AFD7D /* DKCamera */;
+			targetProxy = 9CA4ACA72004D9D5008AFD7D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -385,8 +493,10 @@
 		9C50A8011B921E640044F569 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = BrandAsset;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 85M74MVK78;
 				INFOPLIST_FILE = DKCameraDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -400,8 +510,10 @@
 		9C50A8021B921E640044F569 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = BrandAsset;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 85M74MVK78;
 				INFOPLIST_FILE = DKCameraDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -446,6 +558,70 @@
 			};
 			name = Release;
 		};
+		9CA4ACAB2004D9D5008AFD7D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 85M74MVK78;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = DKCamera/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhangao.DKCamera;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		9CA4ACAC2004D9D5008AFD7D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 85M74MVK78;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = DKCamera/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhangao.DKCamera;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -472,6 +648,15 @@
 			buildConfigurations = (
 				9C50A8041B921E640044F569 /* Debug */,
 				9C50A8051B921E640044F569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9CA4ACAD2004D9D5008AFD7D /* Build configuration list for PBXNativeTarget "DKCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CA4ACAB2004D9D5008AFD7D /* Debug */,
+				9CA4ACAC2004D9D5008AFD7D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

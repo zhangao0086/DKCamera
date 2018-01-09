@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0900"
+   LastUpgradeVersion = "0920"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9C50A7E01B921E640044F569"
-               BuildableName = "DKCameraDemo.app"
-               BlueprintName = "DKCameraDemo"
-               ReferencedContainer = "container:DKCameraDemo.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9C50A7F51B921E640044F569"
-               BuildableName = "DKCameraDemoTests.xctest"
-               BlueprintName = "DKCameraDemoTests"
+               BlueprintIdentifier = "9CA4ACA12004D9D5008AFD7D"
+               BuildableName = "DKCamera.framework"
+               BlueprintName = "DKCamera"
                ReferencedContainer = "container:DKCameraDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -43,26 +29,7 @@
       language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9C50A7F51B921E640044F569"
-               BuildableName = "DKCameraDemoTests.xctest"
-               BlueprintName = "DKCameraDemoTests"
-               ReferencedContainer = "container:DKCameraDemo.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9C50A7E01B921E640044F569"
-            BuildableName = "DKCameraDemo.app"
-            BlueprintName = "DKCameraDemo"
-            ReferencedContainer = "container:DKCameraDemo.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -77,16 +44,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9C50A7E01B921E640044F569"
-            BuildableName = "DKCameraDemo.app"
-            BlueprintName = "DKCameraDemo"
+            BlueprintIdentifier = "9CA4ACA12004D9D5008AFD7D"
+            BuildableName = "DKCamera.framework"
+            BlueprintName = "DKCamera"
             ReferencedContainer = "container:DKCameraDemo.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -96,16 +62,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9C50A7E01B921E640044F569"
-            BuildableName = "DKCameraDemo.app"
-            BlueprintName = "DKCameraDemo"
+            BlueprintIdentifier = "9CA4ACA12004D9D5008AFD7D"
+            BuildableName = "DKCamera.framework"
+            BlueprintName = "DKCamera"
             ReferencedContainer = "container:DKCameraDemo.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
