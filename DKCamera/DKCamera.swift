@@ -41,6 +41,7 @@ class DKCameraPhotoCapturer: NSObject, AVCapturePhotoCaptureDelegate {
     private var imageData: Data?
     
     #if swift(>=4.0)
+    @available(iOS, deprecated: 11.0)
     func photoOutput(_ output: AVCapturePhotoOutput,
                      didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?,
                      previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?,
@@ -53,6 +54,11 @@ class DKCameraPhotoCapturer: NSObject, AVCapturePhotoCaptureDelegate {
         }
         
         self.imageData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer, previewPhotoSampleBuffer: previewPhotoSampleBuffer)
+    }
+    
+    @available(iOS, introduced: 11.0)
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        self.imageData = photo.fileDataRepresentation()
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
