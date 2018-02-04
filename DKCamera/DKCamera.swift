@@ -282,7 +282,6 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         super.viewDidLayoutSubviews()
         
         if self.originalOrientation == nil {
-            self.contentView.frame = self.view.bounds
             self.previewLayer.frame = self.view.bounds
         }
     }
@@ -300,13 +299,17 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
          implement this function to do re-sizing if the safe area
          insets change
      */
+    @available(iOS 11.0, *)
     open override func viewSafeAreaInsetsDidChange() {
-        if #available(iOS 11, *) {
-            // Handle iPhone X notch - resize bottom view to respect safe area
-            let safeAreaBottomInset = view.safeAreaInsets.bottom
-            bottomView.frame.origin = CGPoint(x: 0,
-                                              y: contentView.bounds.height - (bottomView.frame.size.height + safeAreaBottomInset))
-        }
+        super.viewSafeAreaInsetsDidChange()
+        
+        // Handle iPhone X notch - resize bottom view to respect safe area
+        let safeAreaBottomInset = view.safeAreaInsets.bottom
+        let bottomViewContainerHeight = bottomView.frame.size.height + safeAreaBottomInset
+        bottomViewContainer.frame = CGRect(x: 0,
+                                           y: contentView.bounds.height - bottomViewContainerHeight,
+                                           width:contentView.bounds.width,
+                                           height:bottomViewContainerHeight)
     }
     
     override open func didReceiveMemoryWarning() {
@@ -320,27 +323,72 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     // MARK: - Setup
     
+    let bottomViewContainer = UIView()
     let bottomView = UIView()
     open func setupUI() {
         self.view.backgroundColor = UIColor.black
         self.view.addSubview(self.contentView)
         self.contentView.backgroundColor = UIColor.clear
-        self.contentView.frame = self.view.bounds
+        self.contentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        var bottomGuide: Any!
+        var topGuide: Any!
+        if #available(iOS 11, *) {
+            bottomGuide = self.view.safeAreaLayoutGuide
+            topGuide = self.view.safeAreaLayoutGuide
+        } else {
+            bottomGuide = self.bottomLayoutGuide
+            topGuide = self.topLayoutGuide
+        }
+        
+        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
+                                                   attribute: .bottom,
+                                                   relatedBy: .equal,
+                                                   toItem: bottomGuide,
+                                                   attribute: .bottom,
+                                                   multiplier: 1,
+                                                   constant: 0))
+        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
+                                                   attribute: .top,
+                                                   relatedBy: .equal,
+                                                   toItem: topGuide,
+                                                   attribute: .top,
+                                                   multiplier: 1,
+                                                   constant: 0))
+        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
+                                                   attribute: .left,
+                                                   relatedBy: .equal,
+                                                   toItem: self.view,
+                                                   attribute: .left,
+                                                   multiplier: 1,
+                                                   constant: 0))
+        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
+                                                   attribute: .right,
+                                                   relatedBy: .equal,
+                                                   toItem: self.view,
+                                                   attribute: .right,
+                                                   multiplier: 1,
+                                                   constant: 0))
         
         let bottomViewHeight: CGFloat = 70
-        bottomView.bounds.size = CGSize(width: contentView.bounds.width, height: bottomViewHeight)
         
+        bottomView.frame = CGRect(x: 0, y: 0, width: contentView.bounds.width, height: bottomViewHeight)
+        bottomView.autoresizingMask = [.flexibleWidth]
+        bottomViewContainer.addSubview(bottomView)
+        
+        bottomViewContainer.backgroundColor = UIColor(white: 0, alpha: 0.4)
+        bottomViewContainer.addSubview(bottomView)
+        
+        var bottomViewContainerHeight = bottomView.bounds.height
         if #available(iOS 11, *) {
             // Handle iPhone X notch - respect safe area
             let safeAreaBottomInset = view.safeAreaInsets.bottom
-            bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - (bottomViewHeight + safeAreaBottomInset))
-        } else {
-            bottomView.frame.origin = CGPoint(x: 0, y: contentView.bounds.height - bottomViewHeight)
+            bottomViewContainerHeight = bottomViewContainerHeight + safeAreaBottomInset
         }
         
-        bottomView.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
-        bottomView.backgroundColor = UIColor(white: 0, alpha: 0.4)
-        contentView.addSubview(bottomView)
+        bottomViewContainer.frame = CGRect(x: 0, y: contentView.bounds.height - bottomViewContainerHeight, width: contentView.bounds.width, height: bottomViewContainerHeight)
+        bottomViewContainer.autoresizingMask = [.flexibleWidth, .flexibleTopMargin]
+        contentView.addSubview(bottomViewContainer)
         
         // switch button
         let cameraSwitchButton: UIButton = {
@@ -444,7 +492,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
 
         if self.onFaceDetection != nil {
             let metadataOutput = AVCaptureMetadataOutput()
-            metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue(label: "MetadataOutputQueue"))
+            metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue(label: "DKCamera_MetadataOutputQueue"))
             
             if self.captureSession.canAddOutput(metadataOutput) {
                 self.captureSession.addOutput(metadataOutput)
