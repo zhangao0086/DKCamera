@@ -331,44 +331,26 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.contentView.backgroundColor = UIColor.clear
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
         
-        var bottomGuide: Any!
-        var topGuide: Any!
-        if #available(iOS 11, *) {
-            bottomGuide = self.view.safeAreaLayoutGuide
-            topGuide = self.view.safeAreaLayoutGuide
+        if #available(iOS 9.0, *) {
+            var constraints = [
+                self.contentView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+                self.contentView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+                self.contentView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            ]
+            
+            if #available(iOS 11.0, *) {
+                constraints.append(self.contentView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor))
+            } else {
+                constraints.append(self.contentView.topAnchor.constraint(equalTo: self.view.topAnchor))
+            }
+            
+            NSLayoutConstraint.activate(constraints)
         } else {
-            bottomGuide = self.bottomLayoutGuide
-            topGuide = self.topLayoutGuide
+            let viewsDict = ["contentView" : self.contentView]
+            
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[contentView]-0-|", options: [], metrics: nil, views: viewsDict))
+            self.view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[contentView]-0-|", options: [], metrics: nil, views: viewsDict))
         }
-        
-        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
-                                                   attribute: .bottom,
-                                                   relatedBy: .equal,
-                                                   toItem: bottomGuide,
-                                                   attribute: .bottom,
-                                                   multiplier: 1,
-                                                   constant: 0))
-        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
-                                                   attribute: .top,
-                                                   relatedBy: .equal,
-                                                   toItem: topGuide,
-                                                   attribute: .top,
-                                                   multiplier: 1,
-                                                   constant: 0))
-        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
-                                                   attribute: .left,
-                                                   relatedBy: .equal,
-                                                   toItem: self.view,
-                                                   attribute: .left,
-                                                   multiplier: 1,
-                                                   constant: 0))
-        self.view.addConstraint(NSLayoutConstraint(item: self.contentView,
-                                                   attribute: .right,
-                                                   relatedBy: .equal,
-                                                   toItem: self.view,
-                                                   attribute: .right,
-                                                   multiplier: 1,
-                                                   constant: 0))
         
         let bottomViewHeight: CGFloat = 70
         
