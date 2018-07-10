@@ -22,6 +22,7 @@
 		9CA4ACAF2004D9F2008AFD7D /* DKCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A8071B921F1C0044F569 /* DKCamera.swift */; };
 		9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */; };
 		9CA4ACD92004E01D008AFD7D /* DKCameraResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */; };
+		9CB062F220F48BFA006464FE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB062EF20F48A9A006464FE /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +73,7 @@
 		9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DKCamera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CA4ACA42004D9D5008AFD7D /* DKCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DKCamera.h; sourceTree = "<group>"; };
 		9CA4ACA52004D9D5008AFD7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9CB062EF20F48A9A006464FE /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CB062F220F48BFA006464FE /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +110,7 @@
 				9C50A7F91B921E640044F569 /* DKCameraDemoTests */,
 				9CA4ACA32004D9D5008AFD7D /* DKCamera */,
 				9C50A7E21B921E640044F569 /* Products */,
+				9CB062EE20F48A9A006464FE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -176,6 +180,14 @@
 				9CA4ACA52004D9D5008AFD7D /* Info.plist */,
 			);
 			path = DKCamera;
+			sourceTree = "<group>";
+		};
+		9CB062EE20F48A9A006464FE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9CB062EF20F48A9A006464FE /* AVFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -578,7 +590,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = DKCamera/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhangao.DKCamera;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -610,7 +622,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = DKCamera/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhangao.DKCamera;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
