@@ -16,7 +16,7 @@ A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` fra
 
 ## Requirements
 * Xcode 9
-* Swift 3.2 & 4
+* Swift 3.2 & 4.2
 
 ## Installation
 #### iOS 8 and newer
