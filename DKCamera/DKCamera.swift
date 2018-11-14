@@ -789,8 +789,9 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             FocusView.focusView.transform = CGAffineTransform.identity
             FocusView.focusView.center = touchPoint
             self.view.addSubview(FocusView.focusView)
+            
             UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.1,
-                           options: UIView.AnimationOptions(), animations: { () -> Void in
+                           options: [], animations: { () -> Void in
                             FocusView.focusView.transform = CGAffineTransform.identity.scaledBy(x: 0.6, y: 0.6)
             }) { (Bool) -> Void in
                 FocusView.focusView.removeFromSuperview()
