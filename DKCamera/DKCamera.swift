@@ -36,7 +36,25 @@ extension AVMetadataFaceObject {
 @available(iOS, introduced: 10.0)
 class DKCameraPhotoCapturer: NSObject, AVCapturePhotoCaptureDelegate {
     
+    @available(iOS 12.0, *)
+    class DKFileDataRepresentationCustomizer: NSObject, AVCapturePhotoFileDataRepresentationCustomizer {
+    
+        let metadata: [String: Any]
+        
+        init(metadata: [String: Any]) {
+            self.metadata = metadata
+            
+            super.init()
+        }
+        
+        public func replacementMetadata(for photo: AVCapturePhoto) -> [String : Any]? {
+            return metadata
+        }
+    }
+    
     var didCaptureWithImageData: ((_ imageData: Data) -> Void)?
+    
+    var gpsMetadata: [String: Any]?
     
     private var imageData: Data?
     
@@ -58,7 +76,22 @@ class DKCameraPhotoCapturer: NSObject, AVCapturePhotoCaptureDelegate {
     
     @available(iOS, introduced: 11.0)
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        self.imageData = photo.fileDataRepresentation()
+        var metadata = photo.metadata
+        
+        if let gpsMetadata = self.gpsMetadata {
+            metadata[kCGImagePropertyGPSDictionary as String] = gpsMetadata
+            
+            if #available(iOS 12.0, *) {
+                self.imageData = photo.fileDataRepresentation(with: DKFileDataRepresentationCustomizer(metadata: metadata))
+            } else {
+                self.imageData = photo.fileDataRepresentation(withReplacementMetadata: metadata,
+                                                              replacementEmbeddedThumbnailPhotoFormat: photo.embeddedThumbnailPhotoFormat,
+                                                              replacementEmbeddedThumbnailPixelBuffer: nil,
+                                                              replacementDepthData: photo.depthData)
+            }
+        } else {
+            self.imageData = photo.fileDataRepresentation()
+        }
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
@@ -141,6 +174,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open var didCancel: (() -> Void)?
     open var didFinishCapturingImage: ((_ image: UIImage, _ metadata: [AnyHashable : Any]?) -> Void)?
     
+    /// Photos will be tagged with the location where they are taken.
+    /// Must add the "Privacy - Location XXX" tag to your Info.plist.
+    open var containsGPSInMetadata = false
+    
     /// Notify the listener of the detected faces in the preview frame.
     open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
     
@@ -187,6 +224,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open var currentDevice: AVCaptureDevice?
     open var captureDeviceFront: AVCaptureDevice?
     open var captureDeviceRear: AVCaptureDevice?
+    
+    open var locationManager: DKCameraLocationManager?
     
     fileprivate weak var captureOutput: AVCaptureOutput?
     
@@ -248,6 +287,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.setupSession()
         
         self.setupMotionManager()
+        
+        if self.containsGPSInMetadata {
+            self.locationManager = DKCameraLocationManager()
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -286,11 +329,18 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
     }
     
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.locationManager?.startUpdatingLocation()
+    }
+    
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
         self.updateSession(isEnable: false)
         self.motionManager.stopAccelerometerUpdates()
+        self.locationManager?.stopUpdatingLocation()
     }
     
     /*
@@ -683,6 +733,11 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 let settings = AVCapturePhotoSettings(from: self.defaultPhotoSettings)
                 
                 let capturer = DKCameraPhotoCapturer()
+                
+                if let gpsMetadata = self.locationManager?.gpsMetadataForLatestLocation() {
+                    capturer.gpsMetadata = gpsMetadata
+                }
+                
                 capturer.didCaptureWithImageData = { imageData in
                     process(imageData)
                     self.currentCapturer = nil
