@@ -73,6 +73,10 @@ open var showsCameraControls = true
 
 open var defaultCaptureDevice = DKCameraDeviceSourceType.rear
 
+/// Photos will be tagged with the location where they are taken.
+/// Must add the "Privacy - Location XXX" tag to your Info.plist.
+open var containsGPSInMetadata = false
+
 /// Notify the listener of the detected faces in the preview frame.
 open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
 ```
