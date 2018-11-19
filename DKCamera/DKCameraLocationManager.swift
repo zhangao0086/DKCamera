@@ -36,7 +36,7 @@ public class DKCameraLocationManager: NSObject, CLLocationManagerDelegate {
         self.locationManager.stopUpdatingLocation()
     }
     
-    public func gpsMetadataForLatestLocation() -> [String: AnyObject]? {
+    public func gpsMetadataForLatestLocation() -> [String: Any]? {
         guard let location = self.latestLocation else { return nil }
         
         func toISODate(_ date: Date) -> String {
@@ -53,29 +53,29 @@ public class DKCameraLocationManager: NSObject, CLLocationManagerDelegate {
             return f.string(from: date)
         }
         
-        var gpsMetadata = [String: AnyObject]()
+        var gpsMetadata = [CFString: Any]()
         
         let altitudeRef = Int(location.altitude < 0.0 ? 1 : 0)
         let latitudeRef = location.coordinate.latitude < 0.0 ? "S" : "N"
         let longitudeRef = location.coordinate.longitude < 0.0 ? "W" : "E"
         
         // GPS metadata
-        gpsMetadata[(kCGImagePropertyGPSLatitude as String)] = location.coordinate.latitude as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSLongitude as String)] = location.coordinate.longitude as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSLatitudeRef as String)] = latitudeRef as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSLongitudeRef as String)] = longitudeRef as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSAltitude as String)] = location.altitude as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSAltitudeRef as String)] = altitudeRef as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSTimeStamp as String)] = toISOTime(location.timestamp) as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSDateStamp as String)] = toISODate(location.timestamp) as AnyObject
-        gpsMetadata[(kCGImagePropertyGPSVersion as String)] = "2.2.0.0" as AnyObject
+        gpsMetadata[(kCGImagePropertyGPSLatitude)] = location.coordinate.latitude
+        gpsMetadata[(kCGImagePropertyGPSLongitude)] = location.coordinate.longitude
+        gpsMetadata[(kCGImagePropertyGPSLatitudeRef)] = latitudeRef
+        gpsMetadata[(kCGImagePropertyGPSLongitudeRef)] = longitudeRef
+        gpsMetadata[(kCGImagePropertyGPSAltitude)] = location.altitude
+        gpsMetadata[(kCGImagePropertyGPSAltitudeRef)] = altitudeRef
+        gpsMetadata[(kCGImagePropertyGPSTimeStamp)] = toISOTime(location.timestamp)
+        gpsMetadata[(kCGImagePropertyGPSDateStamp)] = toISODate(location.timestamp)
+        gpsMetadata[(kCGImagePropertyGPSVersion)] = "2.2.0.0"
         
         if let heading = self.locationManager.heading {
-            gpsMetadata[(kCGImagePropertyGPSImgDirection as String)] = heading.trueHeading as AnyObject
-            gpsMetadata[(kCGImagePropertyGPSImgDirectionRef as String)] = "T" as AnyObject
+            gpsMetadata[(kCGImagePropertyGPSImgDirection)] = heading.trueHeading
+            gpsMetadata[(kCGImagePropertyGPSImgDirectionRef)] = "T"
         }
         
-        return gpsMetadata
+        return gpsMetadata as [String : Any]
     }
     
     // MARK: - CLLocationManagerDelegate
