@@ -16,6 +16,8 @@
 		9C50A7F11B921E640044F569 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9C50A7EF1B921E640044F569 /* LaunchScreen.xib */; };
 		9C50A7FD1B921E640044F569 /* DKCameraDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A7FC1B921E640044F569 /* DKCameraDemoTests.swift */; };
 		9C50A8081B921F1C0044F569 /* DKCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A8071B921F1C0044F569 /* DKCamera.swift */; };
+		9CA1216F21A28B8600BD17D9 /* DKCameraLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA1216E21A28B8600BD17D9 /* DKCameraLocationManager.swift */; };
+		9CA1217021A28B8600BD17D9 /* DKCameraLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA1216E21A28B8600BD17D9 /* DKCameraLocationManager.swift */; };
 		9CA4ACA62004D9D5008AFD7D /* DKCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA4ACA42004D9D5008AFD7D /* DKCamera.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CA4ACA92004D9D5008AFD7D /* DKCamera.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */; };
 		9CA4ACAA2004D9D5008AFD7D /* DKCamera.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -70,6 +72,7 @@
 		9C50A7FB1B921E640044F569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C50A7FC1B921E640044F569 /* DKCameraDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DKCameraDemoTests.swift; sourceTree = "<group>"; };
 		9C50A8071B921F1C0044F569 /* DKCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DKCamera.swift; sourceTree = "<group>"; };
+		9CA1216E21A28B8600BD17D9 /* DKCameraLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DKCameraLocationManager.swift; sourceTree = "<group>"; };
 		9CA4ACA22004D9D5008AFD7D /* DKCamera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DKCamera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CA4ACA42004D9D5008AFD7D /* DKCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DKCamera.h; sourceTree = "<group>"; };
 		9CA4ACA52004D9D5008AFD7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -168,6 +171,7 @@
 			children = (
 				9C50A8071B921F1C0044F569 /* DKCamera.swift */,
 				5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */,
+				9CA1216E21A28B8600BD17D9 /* DKCameraLocationManager.swift */,
 				9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */,
 			);
 			path = DKCamera;
@@ -340,6 +344,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA1216F21A28B8600BD17D9 /* DKCameraLocationManager.swift in Sources */,
 				9C50A7E91B921E640044F569 /* ViewController.swift in Sources */,
 				5C80BAD61E797AC700FC9146 /* DKCameraResource.swift in Sources */,
 				9C50A8081B921F1C0044F569 /* DKCamera.swift in Sources */,
@@ -359,6 +364,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA1217021A28B8600BD17D9 /* DKCameraLocationManager.swift in Sources */,
 				9CA4ACAF2004D9F2008AFD7D /* DKCamera.swift in Sources */,
 				9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */,
 			);
