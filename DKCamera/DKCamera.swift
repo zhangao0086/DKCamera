@@ -213,6 +213,13 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             self.contentView.isHidden = !self.showsCameraControls
         }
     }
+  
+    /// set to NO to hide all standard camera UI. default is YES.
+    open var showsCameraSwitchButton = true {
+      didSet {
+        self.cameraSwitchButton.isHidden = !self.showsCameraSwitchButton
+      }
+    }
     
     public let captureSession = AVCaptureSession()
     open var previewLayer: AVCaptureVideoPreviewLayer!
