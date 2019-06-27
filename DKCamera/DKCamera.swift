@@ -713,10 +713,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         func process(_ imageData: Data) {
             let takenImage = UIImage(data: imageData)!
-            let cropTakenImage = self.cropImage(with: takenImage)
+//            let cropTakenImage = self.cropImage(with: takenImage)
             let metadata = self.extractMetadata(from: imageData)
             
-            completeBlock(cropTakenImage, metadata, nil)
+            completeBlock(takenImage, metadata, nil)
         }
         
         if #available(iOS 10.0, *) {
