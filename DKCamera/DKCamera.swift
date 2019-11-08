@@ -900,6 +900,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             self.flashMode = .auto
         case .off:
             self.flashMode = .on
+        @unknown default:
+            self.flashMode = .auto
         }
     }
     
