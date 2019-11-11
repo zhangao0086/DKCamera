@@ -15,7 +15,7 @@ extension AVMetadataFaceObject {
 
     open func realBounds(inCamera camera: DKCamera) -> CGRect {
         var bounds = CGRect()
-        let previewSize = camera.previewLayer.bounds.size
+        let previewSize = camera.previewView.bounds.size
         let isFront = camera.currentDevice == camera.captureDeviceFront
         
         if isFront {
@@ -137,6 +137,26 @@ public enum DKCameraDeviceSourceType : Int {
 
 open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
+    open class DKCameraPreviewView: UIView {
+        
+        var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+            guard let layer = layer as? AVCaptureVideoPreviewLayer else {
+                fatalError("Expected `AVCaptureVideoPreviewLayer` type for layer. Check DKCameraPreviewView.layerClass implementation.")
+            }
+            return layer
+        }
+        
+        var session: AVCaptureSession? {
+            get { return videoPreviewLayer.session }
+            set { videoPreviewLayer.session = newValue }
+        }
+        
+        open override class var layerClass: AnyClass {
+            return AVCaptureVideoPreviewLayer.self
+        }
+        
+    }
+    
     open class func checkCameraPermission(_ handler: @escaping (_ granted: Bool) -> Void) {
         func hasCameraPermission() -> Bool {
             #if swift(>=4.0)
@@ -215,7 +235,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
     
     public let captureSession = AVCaptureSession()
-    open var previewLayer: AVCaptureVideoPreviewLayer!
+    open var previewView = DKCameraPreviewView()
     fileprivate let sessionQueue = DispatchQueue(label: "DKCamera_CaptureSession_Queue")
     fileprivate var beginZoomScale: CGFloat = 1.0
     fileprivate var zoomScale: CGFloat = 1.0
@@ -242,6 +262,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             
             return __defaultPhotoSettings as! AVCapturePhotoSettings
         }
+    }
+    
+    open var previewLayer: AVCaptureVideoPreviewLayer {
+        return self.previewView.videoPreviewLayer
     }
     
     open var contentView = UIView()
@@ -282,6 +306,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = UIColor.black
+        
         self.setupDevices()
         self.setupUI()
         self.setupSession()
@@ -300,15 +326,23 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             self.captureSession.startRunning()
         }
         
+        func initialOriginalOrientationForOrientationIfNeeded() {
+            if self.originalOrientation == nil {
+                self.initialOriginalOrientationForOrientation()
+                self.currentOrientation = self.originalOrientation
+            }
+        }
+        
         if !self.motionManager.isAccelerometerActive {
+            if let requiresFullScreen = Bundle.main.infoDictionary?["UIRequiresFullScreen"] as? Bool, !requiresFullScreen {
+                initialOriginalOrientationForOrientationIfNeeded()
+                return
+            }
             self.motionManager.startAccelerometerUpdates(to: OperationQueue.current!, withHandler: { accelerometerData, error in
                 if error == nil {
                     let currentOrientation = accelerometerData!.acceleration.toDeviceOrientation() ?? self.currentOrientation
-                    if self.originalOrientation == nil {
-                        self.initialOriginalOrientationForOrientation()
-                        self.currentOrientation = self.originalOrientation
-                    }
-                    if let currentOrientation = currentOrientation , self.currentOrientation != currentOrientation {
+                    initialOriginalOrientationForOrientationIfNeeded()
+                    if let currentOrientation = currentOrientation, self.currentOrientation != currentOrientation {
                         self.currentOrientation = currentOrientation
                         self.updateContentLayoutForCurrentOrientation()
                     }
@@ -320,15 +354,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         self.updateSession(isEnable: true)
     }
-    
-    open override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
         
-        if self.originalOrientation == nil {
-            self.previewLayer.frame = self.view.bounds
-        }
-    }
-    
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -376,7 +402,6 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     let bottomViewContainer = UIView()
     let bottomView = UIView()
     open func setupUI() {
-        self.view.backgroundColor = UIColor.black
         self.view.addSubview(self.contentView)
         self.contentView.backgroundColor = UIColor.clear
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -536,7 +561,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             }
         }
         
-        self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
+        self.previewView.session = self.captureSession
         
         #if swift(>=4.0)
         self.previewLayer.videoGravity = .resizeAspectFill
@@ -544,11 +569,9 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         #endif
         
-        self.previewLayer.frame = self.view.bounds
-        
-        let rootLayer = self.view.layer
-        rootLayer.masksToBounds = true
-        rootLayer.insertSublayer(self.previewLayer, at: 0)
+        self.view.insertSubview(self.previewView, at: 0)
+        self.previewView.frame = self.view.bounds
+        self.previewView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
     open func setupCurrentDevice() {
@@ -961,6 +984,24 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     open override var shouldAutorotate : Bool {
         return false
+    }
+    
+    open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if #available(iOS 9, *) {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                coordinator.animate(alongsideTransition: { context in
+                    let deviceOrientation = UIDevice.current.orientation
+                    if !(deviceOrientation.isPortrait || deviceOrientation.isLandscape) {
+                            return
+                    }
+
+                    self.initialOriginalOrientationForOrientation()
+                    self.currentOrientation = self.originalOrientation
+                })
+            }
+        }
     }
     
     open func setupMotionManager() {
