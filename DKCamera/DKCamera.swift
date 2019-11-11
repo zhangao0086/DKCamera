@@ -989,6 +989,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         
+        if UIApplication.shared.applicationState == .background { return }
+        
         if #available(iOS 9, *) {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 coordinator.animate(alongsideTransition: { context in
