@@ -347,7 +347,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         if !self.motionManager.isAccelerometerActive {
             if UIDevice.current.userInterfaceIdiom == .pad {
-                if let requiresFullScreen = Bundle.main.infoDictionary?["UIRequiresFullScreen"] as? Bool, !requiresFullScreen {
+                let requiresFullScreen = Bundle.main.infoDictionary?["UIRequiresFullScreen"]
+                if requiresFullScreen == nil || !(requiresFullScreen as! Bool) {
                     initialOriginalOrientationForOrientationIfNeeded()
                     return
                 }                
