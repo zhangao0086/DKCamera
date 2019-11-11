@@ -289,18 +289,30 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.cameraResource = DKDefaultCameraResource()
         
         super.init(nibName: nil, bundle: nil)
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            self.modalPresentationStyle = .fullScreen
+        }
     }
     
     public init(cameraResource: DKCameraResource) {
         self.cameraResource = cameraResource
 
         super.init(nibName: nil, bundle: nil)
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            self.modalPresentationStyle = .fullScreen
+        }
     }
     
     required public init?(coder aDecoder: NSCoder) {
         self.cameraResource = DKDefaultCameraResource()
         
         super.init(coder: aDecoder)
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            self.modalPresentationStyle = .fullScreen
+        }
     }
     
     override open func viewDidLoad() {
@@ -334,9 +346,11 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         }
         
         if !self.motionManager.isAccelerometerActive {
-            if let requiresFullScreen = Bundle.main.infoDictionary?["UIRequiresFullScreen"] as? Bool, !requiresFullScreen {
-                initialOriginalOrientationForOrientationIfNeeded()
-                return
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                if let requiresFullScreen = Bundle.main.infoDictionary?["UIRequiresFullScreen"] as? Bool, !requiresFullScreen {
+                    initialOriginalOrientationForOrientationIfNeeded()
+                    return
+                }                
             }
             self.motionManager.startAccelerometerUpdates(to: OperationQueue.current!, withHandler: { accelerometerData, error in
                 if error == nil {
@@ -991,19 +1005,15 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         if UIApplication.shared.applicationState == .background { return }
         
-        if #available(iOS 9, *) {
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                coordinator.animate(alongsideTransition: { context in
-                    let deviceOrientation = UIDevice.current.orientation
-                    if !(deviceOrientation.isPortrait || deviceOrientation.isLandscape) {
-                            return
-                    }
-
-                    self.initialOriginalOrientationForOrientation()
-                    self.currentOrientation = self.originalOrientation
-                })
+        coordinator.animate(alongsideTransition: { context in
+            let deviceOrientation = UIDevice.current.orientation
+            if !(deviceOrientation.isPortrait || deviceOrientation.isLandscape) {
+                    return
             }
-        }
+
+            self.initialOriginalOrientationForOrientation()
+            self.currentOrientation = self.originalOrientation
+        })
     }
     
     open func setupMotionManager() {

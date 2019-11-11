@@ -59,7 +59,7 @@ class ViewController: UIViewController {
             
             self.imageView?.image = image
         }
-        camera.modalPresentationStyle = .fullScreen
+
         self.present(camera, animated: true, completion: nil)
     }
 	
