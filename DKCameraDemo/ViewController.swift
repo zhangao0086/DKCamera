@@ -59,6 +59,7 @@ class ViewController: UIViewController {
             
             self.imageView?.image = image
         }
+
         self.present(camera, animated: true, completion: nil)
     }
 	
