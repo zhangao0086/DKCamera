@@ -13,6 +13,6 @@ Pod::Spec.new do |s|
   s.frameworks    = "Foundation", "UIKit", "AVFoundation", "CoreMotion"
   s.requires_arc  = true
 
-  s.swift_version = '4.2'
+  s.swift_versions = '4.2', '5'
   
 end
