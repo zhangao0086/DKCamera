@@ -13,7 +13,6 @@
 		9C50A7E91B921E640044F569 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A7E81B921E640044F569 /* ViewController.swift */; };
 		9C50A7EC1B921E640044F569 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C50A7EA1B921E640044F569 /* Main.storyboard */; };
 		9C50A7EE1B921E640044F569 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C50A7ED1B921E640044F569 /* Images.xcassets */; };
-		9C50A7F11B921E640044F569 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9C50A7EF1B921E640044F569 /* LaunchScreen.xib */; };
 		9C50A7FD1B921E640044F569 /* DKCameraDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A7FC1B921E640044F569 /* DKCameraDemoTests.swift */; };
 		9C50A8081B921F1C0044F569 /* DKCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C50A8071B921F1C0044F569 /* DKCamera.swift */; };
 		9CA1216F21A28B8600BD17D9 /* DKCameraLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA1216E21A28B8600BD17D9 /* DKCameraLocationManager.swift */; };
@@ -25,6 +24,7 @@
 		9CA4ACB02004D9F2008AFD7D /* DKCameraResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C80BAD51E797AC700FC9146 /* DKCameraResource.swift */; };
 		9CA4ACD92004E01D008AFD7D /* DKCameraResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9C0FA1C41B93468E0020B5FF /* DKCameraResource.bundle */; };
 		9CB062F220F48BFA006464FE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB062EF20F48A9A006464FE /* AVFoundation.framework */; };
+		D29B0C36242C4CFA00BCEC18 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D29B0C34242C4CFA00BCEC18 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,7 +67,6 @@
 		9C50A7E81B921E640044F569 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9C50A7EB1B921E640044F569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9C50A7ED1B921E640044F569 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		9C50A7F01B921E640044F569 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		9C50A7F61B921E640044F569 /* DKCameraDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DKCameraDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C50A7FB1B921E640044F569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C50A7FC1B921E640044F569 /* DKCameraDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DKCameraDemoTests.swift; sourceTree = "<group>"; };
@@ -77,6 +76,7 @@
 		9CA4ACA42004D9D5008AFD7D /* DKCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DKCamera.h; sourceTree = "<group>"; };
 		9CA4ACA52004D9D5008AFD7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CB062EF20F48A9A006464FE /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D29B0C35242C4CFA00BCEC18 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "Base.lproj/Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,7 +135,7 @@
 				9C50A7E81B921E640044F569 /* ViewController.swift */,
 				9C50A7EA1B921E640044F569 /* Main.storyboard */,
 				9C50A7ED1B921E640044F569 /* Images.xcassets */,
-				9C50A7EF1B921E640044F569 /* LaunchScreen.xib */,
+				D29B0C34242C4CFA00BCEC18 /* Launch Screen.storyboard */,
 				9C50A7E41B921E640044F569 /* Supporting Files */,
 			);
 			path = DKCameraDemo;
@@ -270,32 +270,32 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = ZhangAo;
 				TargetAttributes = {
 					9C50A7E01B921E640044F569 = {
 						CreatedOnToolsVersion = 6.4;
-						DevelopmentTeam = 85M74MVK78;
+						DevelopmentTeam = 7MLVDVH5PU;
 					};
 					9C50A7F51B921E640044F569 = {
 						CreatedOnToolsVersion = 6.4;
-						DevelopmentTeam = 85M74MVK78;
-						LastSwiftMigration = 0820;
+						DevelopmentTeam = 7MLVDVH5PU;
+						LastSwiftMigration = 1130;
 						TestTargetID = 9C50A7E01B921E640044F569;
 					};
 					9CA4ACA12004D9D5008AFD7D = {
 						CreatedOnToolsVersion = 9.2;
 						DevelopmentTeam = 85M74MVK78;
+						LastSwiftMigration = 1130;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
 			buildConfigurationList = 9C50A7DC1B921E640044F569 /* Build configuration list for PBXProject "DKCameraDemo" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -317,8 +317,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C50A7EC1B921E640044F569 /* Main.storyboard in Resources */,
-				9C50A7F11B921E640044F569 /* LaunchScreen.xib in Resources */,
 				9C50A7EE1B921E640044F569 /* Images.xcassets in Resources */,
+				D29B0C36242C4CFA00BCEC18 /* Launch Screen.storyboard in Resources */,
 				9C0FA1C51B93468E0020B5FF /* DKCameraResource.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -395,12 +395,12 @@
 			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
-		9C50A7EF1B921E640044F569 /* LaunchScreen.xib */ = {
+		D29B0C34242C4CFA00BCEC18 /* Launch Screen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				9C50A7F01B921E640044F569 /* Base */,
+				D29B0C35242C4CFA00BCEC18 /* Base */,
 			);
-			name = LaunchScreen.xib;
+			name = "Launch Screen.storyboard";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -410,6 +410,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -418,12 +419,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -465,6 +468,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -473,12 +477,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -514,9 +520,9 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = BrandAsset;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 85M74MVK78;
+				DEVELOPMENT_TEAM = 7MLVDVH5PU;
 				INFOPLIST_FILE = DKCameraDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -531,14 +537,16 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = BrandAsset;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 85M74MVK78;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7MLVDVH5PU;
 				INFOPLIST_FILE = DKCameraDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.zhangao.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -547,7 +555,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 85M74MVK78;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DEVELOPMENT_TEAM = 7MLVDVH5PU;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -557,7 +566,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.zhangao.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DKCameraDemo.app/DKCameraDemo";
 			};
 			name = Debug;
@@ -566,13 +575,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = 85M74MVK78;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DEVELOPMENT_TEAM = 7MLVDVH5PU;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = DKCameraDemoTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.zhangao.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DKCameraDemo.app/DKCameraDemo";
 			};
 			name = Release;
@@ -585,7 +595,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -603,7 +613,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -618,7 +628,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -634,7 +644,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhangao.DKCamera;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
