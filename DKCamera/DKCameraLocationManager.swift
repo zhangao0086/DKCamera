@@ -55,13 +55,16 @@ public class DKCameraLocationManager: NSObject, CLLocationManagerDelegate {
         
         var gpsMetadata = [CFString: Any]()
         
+        let longitude = location.coordinate.longitude
+        let latitude = location.coordinate.latitude
+        
         let altitudeRef = Int(location.altitude < 0.0 ? 1 : 0)
-        let latitudeRef = location.coordinate.latitude < 0.0 ? "S" : "N"
-        let longitudeRef = location.coordinate.longitude < 0.0 ? "W" : "E"
+        let latitudeRef = latitude < 0.0 ? "S" : "N"
+        let longitudeRef = longitude < 0.0 ? "W" : "E"
         
         // GPS metadata
-        gpsMetadata[(kCGImagePropertyGPSLatitude)] = location.coordinate.latitude
-        gpsMetadata[(kCGImagePropertyGPSLongitude)] = location.coordinate.longitude
+        gpsMetadata[(kCGImagePropertyGPSLatitude)] = abs(latitude)
+        gpsMetadata[(kCGImagePropertyGPSLongitude)] = abs(longitude)
         gpsMetadata[(kCGImagePropertyGPSLatitudeRef)] = latitudeRef
         gpsMetadata[(kCGImagePropertyGPSLongitudeRef)] = longitudeRef
         gpsMetadata[(kCGImagePropertyGPSAltitude)] = location.altitude
