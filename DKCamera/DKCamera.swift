@@ -226,6 +226,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     /// Determines whether or not the rotation is enabled.
     
     open var allowsRotate = false
+    open var showsCameraSwitchButton = false
     
     /// set to NO to hide all standard camera UI. default is YES.
     open var showsCameraControls = true {
@@ -468,6 +469,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             cameraSwitchButton.addTarget(self, action: #selector(DKCamera.switchCamera), for: .touchUpInside)
             cameraSwitchButton.setImage(cameraResource.cameraSwitchImage(), for: .normal)
             cameraSwitchButton.sizeToFit()
+            cameraSwitchButton.isHidden = !self.showsCameraSwitchButton
             
             return cameraSwitchButton
         }()
