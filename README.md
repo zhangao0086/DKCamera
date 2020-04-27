@@ -21,6 +21,10 @@ A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` fra
 ## Installation
 #### Swift Package Manager
 
+***In progress***
+
+>  SPM only support source code, which means it cannot include resources such as images.
+
 #### iOS 8 and newer
 
 DKCamera is available on CocoaPods. Simply add the following line to your podfile:
