@@ -15,7 +15,7 @@ extension AVMetadataFaceObject {
 
     open func realBounds(inCamera camera: DKCamera) -> CGRect {
         var bounds = CGRect()
-        let previewSize = camera.previewLayer.bounds.size
+        let previewSize = camera.previewView.bounds.size
         let isFront = camera.currentDevice == camera.captureDeviceFront
         
         if isFront {
@@ -36,7 +36,25 @@ extension AVMetadataFaceObject {
 @available(iOS, introduced: 10.0)
 class DKCameraPhotoCapturer: NSObject, AVCapturePhotoCaptureDelegate {
     
+    @available(iOS 12.0, *)
+    class DKFileDataRepresentationCustomizer: NSObject, AVCapturePhotoFileDataRepresentationCustomizer {
+    
+        let metadata: [String: Any]
+        
+        init(metadata: [String: Any]) {
+            self.metadata = metadata
+            
+            super.init()
+        }
+        
+        public func replacementMetadata(for photo: AVCapturePhoto) -> [String : Any]? {
+            return metadata
+        }
+    }
+    
     var didCaptureWithImageData: ((_ imageData: Data) -> Void)?
+    
+    var gpsMetadata: [String: Any]?
     
     private var imageData: Data?
     
@@ -58,7 +76,22 @@ class DKCameraPhotoCapturer: NSObject, AVCapturePhotoCaptureDelegate {
     
     @available(iOS, introduced: 11.0)
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        self.imageData = photo.fileDataRepresentation()
+        var metadata = photo.metadata
+        
+        if let gpsMetadata = self.gpsMetadata {
+            metadata[kCGImagePropertyGPSDictionary as String] = gpsMetadata
+            
+            if #available(iOS 12.0, *) {
+                self.imageData = photo.fileDataRepresentation(with: DKFileDataRepresentationCustomizer(metadata: metadata))
+            } else {
+                self.imageData = photo.fileDataRepresentation(withReplacementMetadata: metadata,
+                                                              replacementEmbeddedThumbnailPhotoFormat: photo.embeddedThumbnailPhotoFormat,
+                                                              replacementEmbeddedThumbnailPixelBuffer: nil,
+                                                              replacementDepthData: photo.depthData)
+            }
+        } else {
+            self.imageData = photo.fileDataRepresentation()
+        }
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
@@ -104,6 +137,26 @@ public enum DKCameraDeviceSourceType : Int {
 
 open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
+    open class DKCameraPreviewView: UIView {
+        
+        var videoPreviewLayer: AVCaptureVideoPreviewLayer {
+            guard let layer = layer as? AVCaptureVideoPreviewLayer else {
+                fatalError("Expected `AVCaptureVideoPreviewLayer` type for layer. Check DKCameraPreviewView.layerClass implementation.")
+            }
+            return layer
+        }
+        
+        var session: AVCaptureSession? {
+            get { return videoPreviewLayer.session }
+            set { videoPreviewLayer.session = newValue }
+        }
+        
+        open override class var layerClass: AnyClass {
+            return AVCaptureVideoPreviewLayer.self
+        }
+        
+    }
+    
     open class func checkCameraPermission(_ handler: @escaping (_ granted: Bool) -> Void) {
         func hasCameraPermission() -> Bool {
             #if swift(>=4.0)
@@ -141,6 +194,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open var didCancel: (() -> Void)?
     open var didFinishCapturingImage: ((_ image: UIImage, _ metadata: [AnyHashable : Any]?) -> Void)?
     
+    /// Photos will be tagged with the location where they are taken.
+    /// Must add the "Privacy - Location XXX" tag to your Info.plist.
+    open var containsGPSInMetadata = false
+    
     /// Notify the listener of the detected faces in the preview frame.
     open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?
     
@@ -169,6 +226,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     /// Determines whether or not the rotation is enabled.
     
     open var allowsRotate = false
+    open var showsCameraSwitchButton = false
     
     /// set to NO to hide all standard camera UI. default is YES.
     open var showsCameraControls = true {
@@ -178,7 +236,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
     
     public let captureSession = AVCaptureSession()
-    open var previewLayer: AVCaptureVideoPreviewLayer!
+    open var previewView = DKCameraPreviewView()
     fileprivate let sessionQueue = DispatchQueue(label: "DKCamera_CaptureSession_Queue")
     fileprivate var beginZoomScale: CGFloat = 1.0
     fileprivate var zoomScale: CGFloat = 1.0
@@ -187,6 +245,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     open var currentDevice: AVCaptureDevice?
     open var captureDeviceFront: AVCaptureDevice?
     open var captureDeviceRear: AVCaptureDevice?
+    
+    open var locationManager: DKCameraLocationManager?
     
     fileprivate weak var captureOutput: AVCaptureOutput?
     
@@ -203,6 +263,10 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             
             return __defaultPhotoSettings as! AVCapturePhotoSettings
         }
+    }
+    
+    open var previewLayer: AVCaptureVideoPreviewLayer {
+        return self.previewView.videoPreviewLayer
     }
     
     open var contentView = UIView()
@@ -226,28 +290,46 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.cameraResource = DKDefaultCameraResource()
         
         super.init(nibName: nil, bundle: nil)
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            self.modalPresentationStyle = .fullScreen
+        }
     }
     
     public init(cameraResource: DKCameraResource) {
         self.cameraResource = cameraResource
 
         super.init(nibName: nil, bundle: nil)
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            self.modalPresentationStyle = .fullScreen
+        }
     }
     
     required public init?(coder aDecoder: NSCoder) {
         self.cameraResource = DKDefaultCameraResource()
         
         super.init(coder: aDecoder)
+        
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            self.modalPresentationStyle = .fullScreen
+        }
     }
     
     override open func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = UIColor.black
         
         self.setupDevices()
         self.setupUI()
         self.setupSession()
         
         self.setupMotionManager()
+        
+        if self.containsGPSInMetadata {
+            self.locationManager = DKCameraLocationManager()
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {
@@ -257,15 +339,26 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             self.captureSession.startRunning()
         }
         
+        func initialOriginalOrientationForOrientationIfNeeded() {
+            if self.originalOrientation == nil {
+                self.initialOriginalOrientationForOrientation()
+                self.currentOrientation = self.originalOrientation
+            }
+        }
+        
         if !self.motionManager.isAccelerometerActive {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                let requiresFullScreen = Bundle.main.infoDictionary?["UIRequiresFullScreen"]
+                if requiresFullScreen == nil || !(requiresFullScreen as! Bool) {
+                    initialOriginalOrientationForOrientationIfNeeded()
+                    return
+                }                
+            }
             self.motionManager.startAccelerometerUpdates(to: OperationQueue.current!, withHandler: { accelerometerData, error in
                 if error == nil {
                     let currentOrientation = accelerometerData!.acceleration.toDeviceOrientation() ?? self.currentOrientation
-                    if self.originalOrientation == nil {
-                        self.initialOriginalOrientationForOrientation()
-                        self.currentOrientation = self.originalOrientation
-                    }
-                    if let currentOrientation = currentOrientation , self.currentOrientation != currentOrientation {
+                    initialOriginalOrientationForOrientationIfNeeded()
+                    if let currentOrientation = currentOrientation, self.currentOrientation != currentOrientation {
                         self.currentOrientation = currentOrientation
                         self.updateContentLayoutForCurrentOrientation()
                     }
@@ -277,13 +370,11 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         self.updateSession(isEnable: true)
     }
-    
-    open override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
         
-        if self.originalOrientation == nil {
-            self.previewLayer.frame = self.view.bounds
-        }
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.locationManager?.startUpdatingLocation()
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
@@ -291,6 +382,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         self.updateSession(isEnable: false)
         self.motionManager.stopAccelerometerUpdates()
+        self.locationManager?.stopUpdatingLocation()
     }
     
     /*
@@ -326,7 +418,6 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     let bottomViewContainer = UIView()
     let bottomView = UIView()
     open func setupUI() {
-        self.view.backgroundColor = UIColor.black
         self.view.addSubview(self.contentView)
         self.contentView.backgroundColor = UIColor.clear
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -378,6 +469,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             cameraSwitchButton.addTarget(self, action: #selector(DKCamera.switchCamera), for: .touchUpInside)
             cameraSwitchButton.setImage(cameraResource.cameraSwitchImage(), for: .normal)
             cameraSwitchButton.sizeToFit()
+            cameraSwitchButton.isHidden = !self.showsCameraSwitchButton
             
             return cameraSwitchButton
         }()
@@ -486,7 +578,7 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             }
         }
         
-        self.previewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession)
+        self.previewView.session = self.captureSession
         
         #if swift(>=4.0)
         self.previewLayer.videoGravity = .resizeAspectFill
@@ -494,11 +586,9 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         self.previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
         #endif
         
-        self.previewLayer.frame = self.view.bounds
-        
-        let rootLayer = self.view.layer
-        rootLayer.masksToBounds = true
-        rootLayer.insertSublayer(self.previewLayer, at: 0)
+        self.view.insertSubview(self.previewView, at: 0)
+        self.previewView.frame = self.view.bounds
+        self.previewView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     }
     
     open func setupCurrentDevice() {
@@ -683,6 +773,11 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 let settings = AVCapturePhotoSettings(from: self.defaultPhotoSettings)
                 
                 let capturer = DKCameraPhotoCapturer()
+                
+                if let gpsMetadata = self.locationManager?.gpsMetadataForLatestLocation() {
+                    capturer.gpsMetadata = gpsMetadata
+                }
+                
                 capturer.didCaptureWithImageData = { imageData in
                     process(imageData)
                     self.currentCapturer = nil
@@ -845,6 +940,8 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
             self.flashMode = .auto
         case .off:
             self.flashMode = .on
+        @unknown default:
+            self.flashMode = .auto
         }
     }
     
@@ -904,6 +1001,22 @@ open class DKCamera: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     open override var shouldAutorotate : Bool {
         return false
+    }
+    
+    open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if UIApplication.shared.applicationState == .background { return }
+        
+        coordinator.animate(alongsideTransition: { context in
+            let deviceOrientation = UIDevice.current.orientation
+            if !(deviceOrientation.isPortrait || deviceOrientation.isLandscape) {
+                    return
+            }
+
+            self.initialOriginalOrientationForOrientation()
+            self.currentOrientation = self.originalOrientation
+        })
     }
     
     open func setupMotionManager() {

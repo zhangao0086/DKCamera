@@ -19,7 +19,14 @@ A light weight & simple & easy camera for iOS by Swift. It uses `CoreMotion` fra
 * Swift 3.2 & 4.2
 
 ## Installation
+#### Swift Package Manager
+
+***In progress***
+
+>  SPM only support source code, which means it cannot include resources such as images.
+
 #### iOS 8 and newer
+
 DKCamera is available on CocoaPods. Simply add the following line to your podfile:
 
 ```ruby
@@ -72,6 +79,10 @@ open var allowsRotate = false
 open var showsCameraControls = true
 
 open var defaultCaptureDevice = DKCameraDeviceSourceType.rear
+
+/// Photos will be tagged with the location where they are taken.
+/// Must add the "Privacy - Location XXX" tag to your Info.plist.
+open var containsGPSInMetadata = false
 
 /// Notify the listener of the detected faces in the preview frame.
 open var onFaceDetection: ((_ faces: [AVMetadataFaceObject]) -> Void)?

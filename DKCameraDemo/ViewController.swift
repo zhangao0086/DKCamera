@@ -33,7 +33,8 @@ class ViewController: UIViewController {
 
     @IBAction func capture() {        
         let camera = DKCamera()
-//		camera.showsCameraControls = false
+//        camera.containsGPSInMetadata = true
+//		  camera.showsCameraControls = false
 //        camera.defaultCaptureDevice = .front
 //        camera.onFaceDetection = { [unowned self, camera] (faces: [AVMetadataFaceObject]) in
 //            if let face = faces.first {
@@ -58,6 +59,7 @@ class ViewController: UIViewController {
             
             self.imageView?.image = image
         }
+
         self.present(camera, animated: true, completion: nil)
     }
 	
